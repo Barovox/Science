@@ -1,0 +1,207 @@
+﻿<!-- Sidebar -->
+@using QLKHCN_FE.ViewModel
+@model UserLogin
+@{
+  var user = HttpContext.Current.Session["CurrentUser"] as UserLogin;
+}
+
+@{
+  var currentYear = DateTime.Now.Year;
+  var numberOfYears = 5; // số năm cần tạo
+}
+
+<script>
+        const _idUser = "@user.IDUser";
+        const _hoTen = "@user.HoTen";
+        const _quyen = "@user.Role";
+        const _ngach = "@user.Ngach";
+        const _token = "@user.Token";
+</script>
+<script>
+  const elCard3 = document.getElementById("card3");
+  if (elCard3) {
+    if (_quyen == "Quyền cao nhất") {
+      document.getElementById("card3").style.display = "block";
+    } else {
+      document.getElementById("card3").style.display = "none";
+    }
+  }
+</script>
+
+<title>QUẢN LÝ THỐNG KÊ KHỐI LƯỢNG NCKH</title>
+
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Dashboard", "NguoiDung")">
+        <i class="bi bi-house-door"></i>
+        <span>Trang chủ</span>
+      </a>
+    </li>
+
+    <li class="nav-item" id="card3">
+      <a class="nav-link collapsed" href="@Url.Action("Role","NguoiDung")">
+        <i class="bi bi-person"></i>
+        <span>Người dùng</span>
+      </a>
+
+    <li class="nav-item" id="card3">
+      <a class="nav-link collapsed" href="@Url.Action("Index","CaiDatHeThong")">
+        <i class="bi bi-gear"></i>
+        <span>Cài đặt hệ thống</span>
+      </a>
+    </li>
+
+    <li class="nav-heading">Danh mục (cũ) - Sắp bỏ</li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index","DanhMuc")">
+        <i class="bi bi-database"></i>
+        <span>Danh mục WOS 2022</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index", "DanhMucScimago2023")">
+        <i class="bi bi-database"></i>
+        <span>Danh mục WOS 2023</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index","DanhMucScimago")">
+        <i class="bi bi-boxes"></i>
+        <span>Danh mục Scopus</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index","DanhMucTrongNuoc")">
+        <i class="bi bi-buildings"></i>
+        <span>Danh mục HDGSNN</span>
+      </a>
+    </li>
+
+    <li class="nav-heading">Danh mục (mới)</li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#wos-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-database"></i><span>Danh mục WOS</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="wos-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        @for (int i = currentYear - numberOfYears + 1; i <= currentYear; i++)
+        {
+          <li>
+            <a href="@Url.Action("Index", $"DanhMucWOS{i}")">
+              <i class="bi bi-circle"></i>
+              <span>Danh mục WOS @i</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#scopus-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-boxes"></i><span>Danh mục Scopus</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="scopus-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        @for (int i = currentYear - numberOfYears + 1; i <= currentYear; i++)
+        {
+          <li>
+            <a href="@Url.Action("Index", $"DanhMucScopus{i}")">
+              <i class="bi bi-circle"></i>
+              <span>Danh mục Scopus @i</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#hdgsnn-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-buildings"></i><span>Danh mục HDGSNN</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="hdgsnn-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        @for (int i = currentYear - numberOfYears + 1; i <= currentYear; i++)
+        {
+          <li>
+            <a href="@Url.Action("Index", $"DanhMucHDGSNN{i}")">
+              <i class="bi bi-circle"></i>
+              <span>Danh mục HDGSNN @i</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index","DanhMucXetDuyet")">
+        <i class="bi bi-journal-check"></i>
+        <span>Danh mục xét duyệt</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index","DanhMucXetDuyetSinhVien")">
+        <i class="bi bi-journal-check"></i>
+        <span>Danh mục đề tài cấp Trường</span>
+      </a>
+    </li>
+
+    <li class="nav-heading">Thanh toán</li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index","ThanhToanGV")">
+        <i class="bi bi-calculator"></i>
+        <span>Thanh toán Giảng viên</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index","ThanhToanNCV")">
+        <i class="bi bi-calculator"></i>
+        <span>Thanh toán NCV</span>
+      </a>
+    </li>
+
+    <li class="nav-heading">Quy đổi</li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index","QuyDoiGV")">
+        <i class="bi bi-table"></i>
+        <span>Quy đổi Giảng viên</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index","QuyDoiNCV")">
+        <i class="bi bi-table"></i>
+        <span>Quy đổi NCV</span>
+      </a>
+    </li>
+
+    <li class="nav-heading">Thống kê</li>
+
+    <li class="nav-item" id="card3">
+      <a class="nav-link collapsed" href="@Url.Action("Index","ThongKe")">
+        <i class="bi bi-pie-chart"></i>
+        <span>Thống kê</span>
+      </a>
+    </li>
+    
+    <li class="nav-heading">Khác</li>
+    
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="@Url.Action("CauHoi","Admin")">
+            <i class="bi bi-question-circle"></i>
+            <span>Câu hỏi</span>
+          </a>
+        </li>
+
+  </ul>
+
+</aside><!-- End Sidebar-->

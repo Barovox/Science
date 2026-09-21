@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "Đề Tài Sinh Viên";
+    Layout = "~/Views/Shared/_LayoutUserPage.cshtml";
+}
+
+<style>
+    /* ======= Layout nhẹ để khối cân đối giữa màn hình ======= */
+    .dashboard-wrap{
+        max-width: 1280px;    /* rộng vừa mắt trên màn hình to */
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    /* ======= 8 khung (tiles) ======= */
+    .quick-tiles { margin: 8px 0 16px; }
+    .tile {
+        display:flex; align-items:center;
+        background:#fff;
+        border:1px solid #e7e7e7;
+        border-radius:12px;
+        padding:18px 20px;
+        min-height:120px;                  /* to hơn */
+        text-decoration:none;
+        color:#2d3748;
+        box-shadow:0 2px 6px rgba(0,0,0,.06);
+        transition: box-shadow .2s, transform .15s, border-color .2s;
+    }
+    .tile:hover{
+        box-shadow:0 10px 24px rgba(0,0,0,.10);
+        transform: translateY(-2px);
+        border-color:#dcdcdc;
+        color:#1f2937;
+        text-decoration:none;
+    }
+    .tile:active{ transform:none; }
+
+    .tile-icon{
+        width:56px; height:56px;           /* icon to hơn */
+        flex:0 0 56px;
+        border-radius:50%;
+        display:flex; align-items:center; justify-content:center;
+        color:#fff; font-size:22px;         /* cỡ icon */
+        margin-right:16px;
+    }
+    .tile-title{
+        font-weight:bold;
+        text-transform:uppercase;
+        line-height:1.3;
+        font-size:16px;                     /* chữ lớn hơn */
+        letter-spacing:.2px;
+    }
+
+    /* viền nhấn màu ở cạnh trên */
+    .tile.accent-blue   { border-top:4px solid #1479c9; }
+    .tile.accent-orange { border-top:4px solid #f09a3e; }
+    .tile.accent-green  { border-top:4px solid #2dbf64; }
+    .tile.accent-brown  { border-top:4px solid #a37400; }
+    .tile.accent-coral  { border-top:4px solid #ff7272; }
+    .tile.accent-purple { border-top:4px solid #6b39b6; }
+    .tile.accent-teal   { border-top:4px solid #0b7681; }
+    .tile.accent-red    { border-top:4px solid #e41010; }
+
+    /* màu nền cho icon tròn */
+    .icon-blue   { background:#1479c9; }
+    .icon-orange { background:#f09a3e; }
+    .icon-green  { background:#2dbf64; }
+    .icon-brown  { background:#a37400; }
+    .icon-coral  { background:#ff7272; }
+    .icon-purple { background:#6b39b6; }
+    .icon-teal   { background:#0b7681; }
+    .icon-red    { background:#e41010; }
+</style>
+
+<div class="container-fluid dashboard-wrap">
+    <div class="row quick-tiles">
+        <div class="col-xs-12 col-sm-6 col-md-3" style="margin-bottom:18px">
+            <a class="tile accent-blue" href="@Url.Action("DeTai","NguoiDung")">
+                <span class="tile-icon icon-blue"><i class="fas fa-flask"></i></span>
+                <span class="tile-title">Kê khai sản phẩm khoa học công nghệ CB-GV-NV</span>
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3" style="margin-bottom:18px">
+            <a class="tile accent-orange" href="@Url.Action("DeTaiSinhVien","NguoiDung")">
+                <span class="tile-icon icon-orange"><i class="fas fa-tasks"></i></span>
+                <span class="tile-title">Đề tài khoa học công nghệ CB-GV-NV cấp trường</span>
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3" style="margin-bottom:18px">
+            <a class="tile accent-green" href="#">
+                <span class="tile-icon icon-green"><i class="far fa-lightbulb"></i></span>
+                <span class="tile-title">Đăng ký sáng kiến cấp trường</span>
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3" style="margin-bottom:18px">
+            <a class="tile accent-brown" href="#">
+                <span class="tile-icon icon-brown"><i class="fas fa-certificate"></i></span>
+                <span class="tile-title">Đăng ký sáng chế, sở hữu trí tuệ</span>
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3" style="margin-bottom:18px">
+            <a class="tile accent-coral" href="#">
+                <span class="tile-icon icon-coral"><i class="fas fa-user-graduate"></i></span>
+                <span class="tile-title">Đăng ký hướng dẫn đề tài sinh viên NCKH cấp trường</span>
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3" style="margin-bottom:18px">
+            <a class="tile accent-purple" href="#">
+                <span class="tile-icon icon-purple"><i class="fas fa-paper-plane"></i></span>
+                <span class="tile-title">Đăng ký nộp bài cho hội thảo / hội nghị</span>
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3" style="margin-bottom:18px">
+            <a class="tile accent-teal" href="#">
+                <span class="tile-icon icon-teal"><i class="fas fa-book-open"></i></span>
+                <span class="tile-title">Đăng ký biên soạn / thẩm định tài liệu, giáo trình</span>
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3" style="margin-bottom:18px">
+            <a class="tile accent-red" href="#">
+                <span class="tile-icon icon-red"><i class="fas fa-chalkboard-teacher"></i></span>
+                <span class="tile-title">Đăng ký hướng dẫn đề tài sinh viên NCKH cấp khoa</span>
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,353 @@
+﻿@{
+  ViewBag.Title = "Role";
+  Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+<div class="pagetitle" style=" display: flex; align-items: center; justify-content: space-between;">
+  <h1>XÉT DUYỆT NCKH</h1>
+  <div style=" display: flex; align-items: center;">
+    <a type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal-lg-create">Thêm mới</a>
+    <input type="file" id="importFileInput" accept=".xlsx,.xls">
+    <button class="btn btn-sm btn-success" onclick="importExcel()">Import Excel</button>
+  </div>
+</div>
+
+<section class="section">
+  <div class="card">
+    <h5 class="card-title"></h5>
+
+    <div class="card-body">
+      <select id="mySelect">
+        <option value="Quyền cao nhất" selected>Quyền master</option>
+        <option value="Quyền duyệt 1">Duyệt 1</option>
+        <option value="Quyền duyệt 2">Duyệt 2</option>
+        <option value="Quyền duyệt 3">Duyệt 3</option>
+        <option value="">Người dùng</option>
+      </select>
+    </div>
+
+    <div class="card-body">
+      <div id="table-container">
+        <table id="example1" class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>UserID</th>
+              <th>Họ tên</th>
+              <th>Đơn vị công tác</th>
+              <th>Chức danh</th>
+              <th>Quyền</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="modal-lg">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Sửa</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <!-- form start -->
+          <form>
+            <div class="card-body">
+              <div class="form-group">
+                <input type="hidden" class="form-control" id="id">
+                <div class="form-group">
+                  <label for="loaiSanPham" class="form-label">Loại sản phẩm:</label>
+                  <input type="text" class="form-control" id="loaiSanPham">
+                </div>
+                <div class="form-group">
+                  <label for="moTaLoaiSanPham" class="form-label">Mô tả loại sản phẩm:</label>
+                  <input type="text" class="form-control" id="moTaLoaiSanPham">
+                </div>
+                <div class="form-group">
+                  <label for="yeuCauTieuChuan" class="form-label">Yêu cầu tiêu chuẩn:</label>
+                  <input type="text" class="form-control" id="yeuCauTieuChuan">
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="tietChuan" class="form-label">Tiết chuẩn:</label>
+                    <input type="text" class="form-control" id="tietChuan">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="diem" class="form-label">Điểm:</label>
+                    <input type="text" class="form-control" id="diem">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="sua()">Save changes</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-lg-create" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Thêm mới</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <!-- form start -->
+          <form>
+            <div class="card-body">
+              <div class="form-group">
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="IDUser" class="form-label">Mã giảng viên:</label>
+                    <input type="text" class="form-control" id="IDUser">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="Password" class="form-label">Mật khẩu:</label>
+                    <input type="password" class="form-control" id="Password">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="HoTen" class="form-label">Họ tên:</label>
+                  <input type="text" class="form-control" id="HoTen">
+                </div>
+                <div class="form-group">
+                  <label for="CCCD" class="form-label">Căn cước công dân:</label>
+                  <input type="text" class="form-control" id="CCCD">
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="DiaChi" class="form-label">Địa chỉ:</label>
+                    <input type="text" class="form-control" id="DiaChi">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="TinhThanh" class="form-label">Tỉnh thành:</label>
+                    <input type="text" class="form-control" id="TinhThanh">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="GioiTinh" class="form-label">Giới tính:</label>
+                    <input type="number" min="0" max="1" class="form-control" id="GioiTinh" placeholder="0: Nữ / 1: Nam">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="NgaySinh" class="form-label">Ngày sinh:</label>
+                    <input type="date" class="form-control" id="NgaySinh">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="EmailChinh" class="form-label">Email chính:</label>
+                    <input type="text" class="form-control" id="EmailChinh">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="EmailThayThe" class="form-label">Email thay thế:</label>
+                    <input type="text" class="form-control" id="EmailThayThe">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="SDTCoQuan" class="form-label">SĐT Cơ quan:</label>
+                    <input type="text" class="form-control" id="SDTCoQuan">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="SDTDD" class="form-label">SĐT Di động:</label>
+                    <input type="text" class="form-control" id="SDTDD">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="ChucDanh" class="form-label">Chức danh:</label>
+                    <input type="text" class="form-control" id="ChucDanh">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="ChucVu" class="form-label">Chức vụ:</label>
+                    <input type="text" class="form-control" id="ChucVu">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="DonViCongTac" class="form-label">Đơn vị công tác:</label>
+                    <input type="text" class="form-control" id="DonViCongTac">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="PhongBan" class="form-label">Phòng ban:</label>
+                    <input type="text" class="form-control" id="PhongBan">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="quyen" class="form-label">Quyền:</label>
+                  <select class="form-control" id="quyen">
+                    <option value="">Người dùng</option>
+                    <option value="Quyền cao nhất">Quyền cao nhất</option>
+                    <option value="Quyền duyệt 1">Quyền duyệt lần 1</option>
+                    <option value="Quyền duyệt 2">Quyền duyệt lần 2</option>
+                    <option value="Quyền duyệt 3">Quyền duyệt lần 3</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal" onclick="location.href='/NguoiDung/Role'">Đóng</button>
+        <button type="button" class="btn btn-primary" onclick="themMoi()">Thêm</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    function getData() {
+      fetch('https://localhost:44364/api/NguoiDung/Get-all', {
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          const tbody = document.querySelector('#example1 tbody');
+          data.forEach(function (row) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = "<td width='5%' align='center'>" + row.idUser + "</td>" +
+              "<td>" + row.hoTen + "</td>" +
+              "<td>" + row.donViCongTac + "</td>" +
+              "<td>" + row.chucDanh + "</td>" +
+              "<td width='20%'><select onchange='changeQuyen(`" + row.idUser + "`)' id='quyen" + row.idUser + "' class='form-control'>" +
+              "<option value=''" + (row.quyen == "" ? " selected" : "") + ">Người dùng</option>" +
+              "<option value='Quyền cao nhất'" + (row.quyen == "Quyền cao nhất" ? " selected" : "") + ">Quyền cao nhất</option>" +
+              "<option value='Quyền duyệt 1'" + (row.quyen == "Quyền duyệt 1" ? " selected" : "") + ">Quyền duyệt lần 1</option>" +
+              "<option value='Quyền duyệt 2'" + (row.quyen == "Quyền duyệt 2" ? " selected" : "") + ">Quyền duyệt lần 2</option>" +
+              "<option value='Quyền duyệt 3'" + (row.quyen == "Quyền duyệt 3" ? " selected" : "") + ">Quyền duyệt lần 3</option>" +
+              "</select></td>";
+            tbody.appendChild(tr);
+          });
+          $(function () {
+            $("#example1").DataTable({
+              "retrieve": true, // Cho phép sử dụng lại bảng đã được khởi tạo mà không cần khởi tạo lại
+              "paging": true,
+              "searching": true,
+              "ordering": true,
+              "info": true,
+              "lengthChange": false,
+              "autoWidth": false,
+              "responsive": false, // Đặt về false để sử dụng scrollX hiệu quả
+              "scrollX": true,  // Kích hoạt scroll ngang
+              "scrollCollapse": true, // Tự động thu gọn chiều rộng
+              "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+          });
+        });
+
+    }
+    getData();
+
+  });
+
+  function changeQuyen(idUser) {
+    var value = document.getElementById('quyen' + idUser).value.toString();
+    var linksend = `https://localhost:44364/api/NguoiDung/Update/` + idUser;
+    var options = {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(value),
+    };
+    fetch(linksend, options)
+      .then(response => {
+        if (response.ok) {
+          toastr.warning('Sửa thành công');
+
+        } else {
+          toastr.warning('Có lỗi');
+        }
+      });
+  }
+
+  function themMoi() {
+    const data = {
+      idUser: document.getElementById("IDUser").value,
+      password: document.getElementById("Password").value,
+      hoTen: document.getElementById("HoTen").value,
+      gioiTinh: document.getElementById("GioiTinh").value,
+      ngaySinh: document.getElementById("NgaySinh").value,
+      cccd: document.getElementById("CCCD").value,
+      chucDanh: document.getElementById("ChucDanh").value,
+      chucVu: document.getElementById("ChucVu").value,
+      donViCongTac: document.getElementById("DonViCongTac").value,
+      phongBan: document.getElementById("PhongBan").value,
+      diaChi: document.getElementById("DiaChi").value,
+      tinhThanh: document.getElementById("TinhThanh").value,
+      emailChinh: document.getElementById("EmailChinh").value,
+      emailThayThe: document.getElementById("EmailThayThe").value,
+      sdtCoQuan: document.getElementById("SDTCoQuan").value,
+      sdtdd: document.getElementById("SDTDD").value,
+      quyen: document.getElementById("quyen").value,
+    }
+    console.log(data);
+    fetch('https://localhost:44364/api/NguoiDung/Create', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => {
+        console.log(response);
+        if (response.ok) {
+          alert('Thêm dữ liệu thành công!');
+          // Đóng modal
+          $('#modal-lg-create').modal('hide');
+
+          // Load lại trang
+          location.reload();
+        } else {
+          alert('Có lỗi');
+        }
+      });
+  }
+
+  function importExcel() {
+    const input = document.querySelector('#importFileInput');
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('https://localhost:44364/api/NguoiDung/ImportExcel', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+      },
+      body: formData
+    })
+      .then(response => {
+        if (!response.ok) {
+          return alert("Có lỗi xảy ra");
+        }
+        return alert("Nhập dữ liệu thành công");
+      })
+  }
+</script>

@@ -1,0 +1,219 @@
+﻿@{
+  ViewBag.Title = "Index";
+  Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+<div class="pagetitle" style=" display: flex; align-items: center; justify-content: space-between;">
+  <h1>DANH MỤC WOS 2023</h1>
+  <div style=" display: flex; align-items: center;">
+    <a type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal-lg-create">Thêm mới</a>
+    <input type="file" id="importFileInput" accept=".xlsx,.xls">
+    <button class="btn btn-sm btn-success" onclick="importExcel()">Import Excel</button>
+  </div>
+</div>
+
+<section class="section">
+  <div class="card">
+    <h5 class="card-title"></h5>
+
+    <div class="card-body" style="width: 100%!important; overflow-x: auto;">
+      <table id="example3" class="table table-bordered small table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tên tạp chí</th>
+            <th>ISSN</th>
+            <th>EISSN</th>
+            <th>Danh mục 1</th>
+            <th>Danh mục 2</th>
+            <th>Danh mục 3</th>
+            <th>Danh mục 4</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="modal-lg-create" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Thêm mới</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <!-- form start -->
+          <form>
+            <div class="card-body">
+              <div class="form-group">
+                <div class="form-group">
+                  <label for="tentapchicr" class="form-label">Tên tạp chí:</label>
+                  <input type="text" class="form-control" id="tentapchicr">
+                </div>
+                <div class="form-group">
+                  <label for="issncr" class="form-label">ISSN:</label>
+                  <input type="text" class="form-control" id="issncr">
+                </div>
+                <div class="form-group">
+                  <label for="eissncr" class="form-label">EISSN:</label>
+                  <input type="text" class="form-control" id="eissncr">
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="category_1cr" class="form-label">Danh mục 1:</label>
+                    <input type="text" class="form-control" id="category_1cr">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="category_2cr" class="form-label">Danh mục 2:</label>
+                    <input type="text" class="form-control" id="category_2cr">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="category_3cr" class="form-label">Danh mục 3:</label>
+                    <input type="text" class="form-control" id="category_3cr">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="category_4cr" class="form-label">Danh mục 4:</label>
+                    <input type="text" class="form-control" id="category_4cr">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal" onclick="location.href='/DanhMucScimago2023/Index'">Close</button>
+        <button type="button" class="btn btn-primary" onclick="themMoi()">Add</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const table = $('#example3').DataTable({
+      "paging": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "responsive": false,
+      "lengthChange": true,
+      "scrollX": true,
+      "width": "100%",
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+      "ajax": {
+        "url": "https://localhost:44364/api/DanhMucScimago2023/Get-all",
+        "headers": {
+          "Authorization": "Bearer " + _token,
+          "Content-Type": "application/json"
+        },
+        "dataSrc": ""
+      },
+      "columns": [
+        { "data": "number", "width": "3%" },
+        { "data": "journal_name", "width": "6%" },
+        { "data": "issn", "width": "4%" },
+        { "data": "eissn", "width": "4%" },
+        { "data": "category_1" },
+        { "data": "category_2" },
+        { "data": "category_3" },
+        { "data": "category_4" },
+        {
+          "data": null, "width": "3%", "orderable": false,
+          "render": function (data, type, row, meta) {
+            return "<a type='button' data-toggle='modal' data-target='#modal-lg' onclick='xemchitiet(" + row.id + ")'><i class='bi bi-pencil-square' style='color: #3276b1;'></i></a>";
+          }
+        },
+        {
+          "data": null, "width": "3%", "orderable": false,
+          "render": function (data, type, row, meta) {
+            return "<a type='button' onclick='deleteItem(" + row.id + ")'><i class='bi bi-trash' style='color: #c82333;'></i></a>";
+          }
+        }
+      ]
+
+    }).buttons().container().appendTo('#example3_wrapper .col-md-6:eq(0)');
+  });
+
+  function themMoi() {
+    const data = {
+      journal_name: document.getElementById("tentapchicr").value,
+      issn: document.getElementById("issncr").value,
+      eissn: document.getElementById("eissncr").value,
+      category_1: document.getElementById("category_1cr").value,
+      category_2: document.getElementById("category_2cr").value,
+      category_3: document.getElementById("category_3cr").value,
+      category_4: document.getElementById("category_4cr").value,
+    }
+    fetch('https://localhost:44364/api/DanhMucScimago2023/Create', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => {
+        if (response.ok) {
+          alert('Thêm dữ liệu thành công!');
+          // Đóng modal
+          $('#modal-lg-create').modal('hide');
+
+          // Load lại trang
+          location.reload();
+        } else {
+          alert('Có lỗi');
+        }
+      });
+  }
+
+  //Xóa
+  function deleteItem(id) {
+    if (confirm("Xác nhận xóa?")) {
+      fetch("https://localhost:44364/api/DanhMucScimago2023/Delete/" + id, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            alert('Xóa dữ liệu thành công!');
+            window.location.href = '/DanhMuc';
+          } else {
+            alert('Có lỗi xảy ra');
+          }
+        });
+    }
+  }
+  function importExcel() {
+    const input = document.querySelector('#importFileInput');
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('https://localhost:44364/api/DanhMucScimago2023/ImportExcel', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+      },
+      body: formData
+    })
+      .then(response => {
+        if (!response.ok) {
+          return alert("Có lỗi xảy ra");
+        }
+        return alert("Nhập dữ liệu thành công");
+      })
+  }
+</script>

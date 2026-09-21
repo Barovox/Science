@@ -1,0 +1,152 @@
+﻿@using QLKHCN_FE.ViewModel
+@model UserLogin
+@{
+    var user = HttpContext.Current.Session["CurrentUser"] as UserLogin;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JDI SYSTEM - Journal of Development and Integration</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="~/Content/NewAssets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="~/Content/NewAssets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="~/Content/NewAssets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="~/Content/NewAssets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="~/Content/NewAssets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="~/Content/NewAssets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="~/Content/NewAssets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="~/Content/NewAssets/css/style.css" rel="stylesheet">
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="~/Content/clients/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="~/Content/clients/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="~/Content/clients/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="~/Content/clients/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="~/Content/clients/plugins/toastr/toastr.min.css">
+  <script>
+        const _idUser = "@user.IDUser";
+        const _hoTen = "@user.HoTen";
+        const _quyen = "@user.Role";
+        const _ngach = "@user.Ngach";
+        const _token = "@user.Token";
+  </script>
+</head>
+<body>
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+
+  <div class="d-flex align-items-center justify-content-between">
+    <a href="#" class="logo d-flex align-items-center">
+      <img src="~/Content/Images/jdi-logo.png" alt="">
+      <span class="d-none d-lg-block">
+        <abbr title="Journal of Development and Integration">JDI SYSTEM</abbr>
+      </span>
+    </a>
+    <i class="bi bi-list toggle-sidebar-btn"></i>
+  </div><!-- End Logo -->
+
+  <nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center">
+
+      <li class="nav-item dropdown pe-3">
+
+        <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+          <span class="d-none d-md-block dropdown-toggle ps-2">@user.HoTen</span>
+        </a><!-- End Profile Iamge Icon -->
+
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+          <li class="dropdown-header">
+            <h6>@user.HoTen</h6>
+            <span>@user.Ngach</span>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+
+          @*<li>
+                <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+                  <i class="bi bi-question-circle"></i>
+                  <span>Need Help?</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>*@
+
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="@Url.Action("Logout", "NguoiDung")" style="color: #c82333">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Đăng xuất</span>
+            </a>
+          </li>
+
+        </ul><!-- End Profile Dropdown Items -->
+      </li><!-- End Profile Nav -->
+
+    </ul>
+  </nav><!-- End Icons Navigation -->
+
+</header><!-- End Header -->
+
+@Html.Partial("_PartialJDISideBar");
+
+<main id="main" class="main">
+  @RenderBody()
+</main>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<!-- Vendor JS Files -->
+<script src="~/Content/NewAssets/vendor/apexcharts/apexcharts.min.js"></script>
+<script src="~/Content/NewAssets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="~/Content/NewAssets/vendor/chart.js/chart.umd.js"></script>
+<script src="~/Content/NewAssets/vendor/echarts/echarts.min.js"></script>
+<script src="~/Content/NewAssets/vendor/quill/quill.js"></script>
+<script src="~/Content/NewAssets/vendor/simple-datatables/simple-datatables.js"></script>
+<script src="~/Content/NewAssets/vendor/tinymce/tinymce.min.js"></script>
+<script src="~/Content/NewAssets/vendor/php-email-form/validate.js"></script>
+
+<!-- Template Main JS File -->
+<script src="~/Content/NewAssets/js/main.js"></script>
+
+<!-- jQuery -->
+<script src="~/Content/clients/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="~/Content/clients/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- bs-custom-file-input -->
+<script src="~/Content/clients/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+
+<!-- DataTables  & Plugins -->
+<script src="~/Content/clients/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/Content/clients/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Content/clients/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/Content/clients/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/Content/clients/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/Content/clients/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/Content/clients/plugins/jszip/jszip.min.js"></script>
+<script src="~/Content/clients/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/Content/clients/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/Content/clients/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/Content/clients/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/Content/clients/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+<!-- SweetAlert2 -->
+<script src="~/Content/clients/plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- Toastr -->
+<script src="~/Content/clients/plugins/toastr/toastr.min.js"></script>
+</body>
+</html>

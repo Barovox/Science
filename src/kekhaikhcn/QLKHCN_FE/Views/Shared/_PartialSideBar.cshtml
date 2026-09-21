@@ -1,0 +1,180 @@
+﻿<!-- Sidebar -->
+@using QLKHCN_FE.ViewModel
+@model UserLogin
+@{
+  var user = HttpContext.Current.Session["CurrentUser"] as UserLogin;
+}
+
+@{
+  var currentYear = DateTime.Now.Year;
+  var numberOfYears = 5; // số năm cần tạo
+}
+
+<script>
+        const _idUser = "@user.IDUser";
+        const _hoTen = "@user.HoTen";
+        const _quyen = "@user.Role";
+        const _ngach = "@user.Ngach";
+        const _token = "@user.Token";
+</script>
+<script>
+  const elCard3 = document.getElementById("card3");
+  if (elCard3) {
+    if (_quyen == "Quyền cao nhất") {
+      document.getElementById("card3").style.display = "block";
+    } else {
+      document.getElementById("card3").style.display = "none";
+    }
+  }
+</script>
+
+<title>QUẢN LÝ THỐNG KÊ KHỐI LƯỢNG NCKH</title>
+
+<div class="sidebar">
+  <!-- Sidebar user (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="nav-item">
+      <a href="@Url.Action("DeTai", "NguoiDung")" class="nav-link">
+        <i class="fas fa-home" style="font-size :30px"></i>
+        <p>
+          Home Page
+        </p>
+      </a>
+
+    </div>
+
+    <img src="~/Content/clients/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+
+
+    <a href="#" class="d-block">Admin KHCN</a>
+
+
+  </div>
+
+
+
+  <!-- SidebarSearch Form -->
+  <!-- Sidebar Menu -->
+  <nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false" id="menu">
+      <!-- Add icons to the links using the .nav-icon class
+  with font-awesome or any other icon font library -->
+      <li class="nav-item">
+        <a href="@Url.Action("Index","DanhMuc")" class="nav-link">
+          <i class="nav-icon fas fa-database"></i>
+          <p>
+            Danh Mục WOS 2022
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="@Url.Action("Index","DanhMucScimago2023")" class="nav-link">
+          <i class="nav-icon fas fa-database"></i>
+          <p>
+            Danh Mục WOS 2023
+          </p>
+        </a>
+      </li>
+      @for (int i = currentYear - numberOfYears + 1; i <= currentYear; i++)
+      {
+        <li class="nav-item">
+          <a href="@Url.Action("Index", $"DanhMucWOS{i}")" class="nav-link">
+            <i class="nav-icon fas fa-database"></i>
+            <p>
+              Danh Mục WOS @i
+            </p>
+          </a>
+        </li>
+      }
+      <li class="nav-item">
+        <a href="@Url.Action("Index","DanhMucScimago")" class="nav-link">
+          <i class="nav-icon fas fa-cubes"></i>
+          <p>
+            Danh Mục Scopus
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="@Url.Action("Index","DanhMucTrongNuoc")" class="nav-link">
+          <i class="nav-icon fas fa-university"></i>
+          <p>
+            Danh Mục HDGSNN
+          </p>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a href="@Url.Action("Index","DanhMucXetDuyet")" class="nav-link">
+          <i class="nav-icon fas fa-check"></i>
+          <p>
+            Danh Mục Xét Duyệt
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="@Url.Action("Index","ThanhToanGV")" class="nav-link">
+          <i class="nav-icon fas fa-table"></i>
+          <p>
+            Thanh Toán Giảng Viên
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="@Url.Action("Index","ThanhToanNCV")" class="nav-link">
+          <i class="nav-icon fas fa-table"></i>
+          <p>
+            Thanh Toán NCV
+          </p>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a href="@Url.Action("Index","QuyDoiGV")" class="nav-link">
+          <i class="nav-icon fas fa-table"></i>
+          <p>
+            Quy Đổi Giảng Viên
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="@Url.Action("Index","QuyDoiNCV")" class="nav-link">
+          <i class="nav-icon fas fa-table"></i>
+          <p>
+            Quy Đổi NCV
+          </p>
+        </a>
+      </li>
+
+      <li class="nav-item" id="card3">
+        <a href="@Url.Action("Role","NguoiDung")" class="nav-link">
+          <i class="nav-icon fas fa-user"></i>
+          <p>
+            Người Dùng
+          </p>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a href="@Url.Action("Index","ThongKe")" class="nav-link">
+          <i class="nav-icon fas fa-chart-pie"></i>
+          <p>
+            Thống Kê
+          </p>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a href="@Url.Action("Logout", "NguoiDung")" class="nav-link">
+          <i class="nav-icon fas fa-power-off"></i>
+          <p>
+            Đăng xuất
+          </p>
+        </a>
+      </li>
+
+
+    </ul>
+  </nav>
+  <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->

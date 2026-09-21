@@ -1,0 +1,23 @@
+.wrapper {
+  height: 100vh;
+  background-size: cover;
+  background-image: url("/assets/images/login_container_banner.jpg");
+  overflow: hidden;
+}
+
+.form {
+  position: absolute;
+  right: 0;
+
+  border-left: 1px solid
+    light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-7));
+  height: 100vh;
+  width: 50%;
+  padding: 100px;
+  padding-top: 80px;
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    padding: 30px;
+    width: 100%;
+  }
+}

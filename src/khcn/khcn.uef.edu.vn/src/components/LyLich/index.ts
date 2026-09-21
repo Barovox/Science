@@ -1,0 +1,10 @@
+export { default as AvatarUploader } from "./AvatarUploader/AvatarUploader";
+export { default as ThongTinChung } from "./ThongTinChung/ThongTinChung";
+export { default as GiangDayVaCongTac } from "./GiangDayVaCongTac/GiangDayVaCongTac";
+export { default as DuAnDaThamGia } from "./DuAnDaThamGia/DuAnDaThamGia";
+export { default as HuongDan } from "./HuongDan/HuongDan";
+export { default as BaiBao } from "./BaiBao/BaiBao";
+export { default as KhenThuong } from "./KhenThuong/KhenThuong";
+export { default as MonGiangDay } from "./MonGiangDay/MonGiangDay";
+export { default as NhomNghienCuuUEF } from "./NhomNghienCuuUEF/NhomNghienCuuUEF";
+export { default as CongKhai } from "./CongKhai/CongKhai";

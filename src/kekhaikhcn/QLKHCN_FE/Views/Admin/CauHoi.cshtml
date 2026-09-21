@@ -1,0 +1,459 @@
+﻿@{
+  ViewBag.Title = "CauHoi";
+  Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+<style>
+    .danhSachDinhKem {
+        columns: 3;
+        column-gap: 1rem;
+    }
+    .danhSachDinhKem .file-item {
+        /*background: #f5f5f5;*/
+        border: 2px solid white;
+        break-inside: avoid;
+        overflow: hidden;
+    }
+    .danhSachDinhKem .file-item img {
+        max-width: 100%;
+        max-height: 200px;
+    }
+    .danhSachDinhKem .file-item a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .danhSachDinhKem .file-item a:hover {
+        text-decoration: underline;
+    }
+    .danhSachDinhKem .file-item .file-icon {
+        margin-right: 5px;
+        vertical-align: middle;
+    }
+    
+    @@media screen and (max-width: 768px) {
+      .danhSachDinhKem {
+        columns: 2;
+      }
+    }
+    
+    @@media screen and (max-width: 480px) {
+      .danhSachDinhKem {
+        columns: 1;
+      }
+    }
+</style>
+
+<div class="pagetitle" style=" display: flex; align-items: center; justify-content: space-between;">
+  <h1>Câu hỏi</h1>
+</div>
+
+<section class="section">
+    <div class="card">
+        <h5 class="card-title"></h5>
+
+        <div class="card-body" style="width: 100%!important; overflow-x: auto;">
+            <table id="example1" class="table table-bordered small table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tiêu đề</th>
+                        <th>Mô tả</th>
+                        <th>Trả lời</th>
+                        <th>Phân loại</th>
+                        <th>Ngày hỏi</th>
+                        <th>Ngày trả lời</th>
+
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modal-xl">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h4 class="modal-title">Chỉnh sửa</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <div class="card">
+                      <div class="card-body">
+                          <form class="form-group">
+                              <input type="hidden" class="form-control" id="idCauHoi">
+                              <div class="form-group">
+                                  <label for="tieuDe" class="form-label">Tiêu đề</label>
+                                  <input type="text" class="form-control" placeholder="Thêm tiêu đề cho câu hỏi" id="tieuDe">
+                              </div>
+                              <div class="form-group">
+                                  <label for="moTa" class="form-label">Mô tả</label>
+                                  <textarea type="text" class="form-control" disabled id="moTa"></textarea>
+                              </div>
+                              <div class="my-3">
+                                  <label>Đính kèm</label>
+                                  <div id="danhSachDinhKem" class="danhSachDinhKem my-2"></div>
+                              </div>
+                              <div class="my-3">
+                                  @* <label for="traLoi" class="form-label">Trả lời</label> *@
+                                  @* <textarea type="text" class="form-control" placeholder="Câu trả lời, giải pháp, giải đáp vấn đề..." id="traLoi"></textarea> *@
+                                  <label>Trả lời</label>
+                                  <div class="traLoiEditor">
+                                      @* <p>Hello World!</p> *@
+                                      @* <p>This is Quill <strong>full</strong> editor</p> *@
+                                  </div>
+                              </div>
+                              <div class="row">
+                                  <div class="col-6">
+                                      <div class="form-group">
+                                          <label for="phanLoai" class="form-label">Phân loại</label>
+                                          <input type="text" class="form-control" placeholder="Phân loại câu hỏi" id="phanLoai">
+                                      </div>
+                                  </div>
+                                  <div class="col-6">
+                                      <div class="form-check" style="margin-top: 20px">
+                                          <input class="form-check-input" type="checkbox" value="" id="congKhai">
+                                          <label class="form-check-label" for="congKhai">
+                                              Công khai lên trung tâm hỗ trợ
+                                          </label>
+                                      </div>
+                                      <div class="form-check">
+                                          <input class="form-check-input" type="checkbox" value="" id="thuongGap">
+                                          <label class="form-check-label" for="thuongGap">
+                                              Đây là câu hỏi thường gặp
+                                          </label>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="row">
+                                  <div class="col-6">
+                                      <fieldset class="border rounded-3 px-3 pb-3">
+                                          <legend class="float-none w-auto px-3" style="font-size: smaller;">Người hỏi</legend>
+                                          <div class="form-group">
+                                              <label for="q_HoTen" class="form-label">Họ tên</label>
+                                              <input type="text" class="form-control" disabled id="q_HoTen">
+                                          </div>
+                                          <div class="form-group">
+                                              <label for="q_Email" class="form-label">Email</label>
+                                              <input type="text" class="form-control" disabled id="q_Email">
+                                          </div>
+                                          <div class="form-group">
+                                              <label for="q_Phone" class="form-label">SĐT / Zalo</label>
+                                              <input type="text" class="form-control" disabled id="q_Phone">
+                                          </div>
+                                          <div class="form-group">
+                                              <label for="q_dateSubmit" class="form-label">Ngày hỏi</label>
+                                              <input type="text" class="form-control" disabled id="q_dateSubmit">
+                                          </div>
+                                      </fieldset>
+                                  </div>
+                                  <div class="form-group col-6">
+                                      <fieldset class="border rounded-3 px-3 pb-3">
+                                          <legend class="float-none w-auto px-3" style="font-size: smaller;">Người trả lời (tự động)</legend>
+                                          <div class="form-group">
+                                              <label for="a_by" class="form-label">Họ tên</label>
+                                              <input type="text" class="form-control" disabled id="a_by">
+                                          </div>
+                                          <div class="form-group">
+                                              <label for="a_dateSubmit" class="form-label">Ngày trả lời</label>
+                                              <input type="text" class="form-control" disabled id="a_dateSubmit">
+                                          </div>
+                                      </fieldset>
+                                  </div>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+                  <!-- /.card -->
+              </div>
+              <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-bs-dismiss="modal">Đóng</button>
+                  <button type="button" class="btn btn-primary" onclick="update()">Lưu thay đổi</button>
+              </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<script>
+    var quill;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        $('#modal-xl').on('hidden.bs.modal', function () {
+            clearModalContent();
+        })
+        
+        quill = new Quill(".traLoiEditor", {
+            modules: {
+                toolbar: [
+                    [{ font: [] }, { size: [] }, { header: [1, 2, 3, 4, 5, 6, false] }],
+                    ["bold", "italic", "underline", "strike"],
+                    [{ color: [] }, { background: [] }],
+                    [{ script: "super" }, { script: "sub" }],
+                    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+                    ["direction", { align: [] }],
+                    ["link", "image", "video"],
+                    ["clean"]
+                ]
+            },
+            placeholder: "Câu trả lời, giải pháp, giải đáp vấn đề...",
+            theme: "snow"
+        });
+              
+        $('#example1').DataTable({
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "responsive": false,
+            "lengthChange": true,
+            "scrollX": true,
+            "width": "100%",
+            "ajax": {
+                "url": "https://localhost:44364/api/CauHoi/Get-all",
+                "headers": {
+                    "Authorization": "Bearer " + _token,
+                    "Content-Type": "application/json"
+                },
+                "dataSrc": ""
+            },
+            "columns": [
+                { "data": "idCauHoi" },
+                { "data": "tieuDe" },
+                { "data": "moTa" },
+                { "data": "traLoi" },
+                { "data": "phanLoai" },
+                {
+                    "data": "q_dateSubmit",
+                    "render": function (data) {
+                        return convertDateString(data);
+                    }
+                },
+                {
+                    "data": "a_dateSubmit",
+                    "render": function (data) {
+                        return convertDateString(data);
+                    }
+                },
+                {
+                    "data": null, "width": "3%", "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        return "<a type='button' data-bs-toggle='modal' data-bs-target='#modal-xl' onclick='xemchitiet(" + row.idCauHoi + ")'><i class='bi bi-pencil-square' style='color: #3276b1;'></i></a>";
+                    }
+                },
+                {
+                    "data": null, "width": "3%", "orderable": false,
+                    "render": function (data, type, row, meta) {
+                        return "<a type='button' onclick='deleteItem(" + row.idCauHoi + ")'><i class='bi bi-trash' style='color: #c82333;'></i></a>";
+                    }
+                }
+            ]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+    
+    function clearModalContent() {
+        document.getElementById("idCauHoi").value = "";
+        document.getElementById("tieuDe").value = "";
+        document.getElementById("moTa").value = "";
+        document.getElementById("traLoi").value = "";
+        document.getElementById("phanLoai").value = "";
+        
+        document.getElementById("congKhai").checked = false;
+        document.getElementById("thuongGap").checked = false;
+        
+        document.getElementById("q_HoTen").value = "";
+        document.getElementById("q_Email").value = "";
+        document.getElementById("q_Phone").value = "";
+        document.getElementById("q_dateSubmit").value = "";
+        
+        document.getElementById("a_by").value = "";
+        document.getElementById("a_dateSubmit").value = "";
+
+        document.getElementById("danhSachDinhKem").innerHTML = "";
+    }
+    
+    /**
+    * Giải mã ký tự mã hóa HTML. Ví dụ:
+    * <p>
+    * <pre>
+    * const str = "V&#245; Phạm Th&#224;nh Lu&#226;n";
+    * 
+    * console.log(str); // V&#245; Phạm Th&#224;nh Lu&#226;n
+    * console.log(decodeHtmlEntities(str)); // Võ Phạm Thành Luân
+    * </pre>
+    * 
+    * @@See https://stackoverflow.com/a/7394787
+    */
+    function decodeHtmlEntities(encodedString) {
+        const tempElement = document.createElement("div");
+        tempElement.innerHTML = encodedString;
+        return tempElement.innerText || tempElement.textContent;
+    }
+    
+    function xemchitiet(idCauHoi) {
+        // console.log(idCauHoi);
+        fetch('https://localhost:44364/api/CauHoi/Get-id/' + idCauHoi, {
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                // console.log(data);
+                document.getElementById("idCauHoi").value = data.idCauHoi;
+                document.getElementById("tieuDe").value = data.tieuDe;
+                document.getElementById("moTa").value = data.moTa;
+                
+                // document.getElementById("traLoi").value = data.traLoi;
+                quill.root.innerHTML = data.traLoi;
+                
+                document.getElementById("phanLoai").value = data.phanLoai;
+                
+                document.getElementById("congKhai").checked = data.congKhai;
+                document.getElementById("thuongGap").checked = data.thuongGap;
+                
+                const nguoiHoi = JSON.parse(data.q_by);
+                document.getElementById("q_HoTen").value = nguoiHoi.HoTen;
+                document.getElementById("q_Email").value = nguoiHoi.Email;
+                document.getElementById("q_Phone").value = nguoiHoi.Phone;
+                document.getElementById("q_dateSubmit").value = convertDateString(data.q_dateSubmit);
+                
+                // console.log(_hoTen); // V&#245; Phạm Th&#224;nh Lu&#226;n
+                // console.log(decodeHtmlEntities(_hoTen)); // Võ Phạm Thành Luân
+                document.getElementById("a_by").value = data.a_by ? data.a_by : decodeHtmlEntities(_hoTen); // không rõ nguyên nhân vấn đề tên bị mã hóa HTML
+                document.getElementById("a_dateSubmit").value = convertDateString(data.a_dateSubmit);
+                
+                // Đính kèm
+                document.getElementById("danhSachDinhKem").innerHTML = "";
+                const fileList = data.danhSachDinhKem;
+                
+                fileList.forEach((fileUrl) => {
+                    const fileDiv = document.createElement('div');
+                    fileDiv.className = 'file-item';
+                    
+                    const fileLink = document.createElement('a');
+                    fileLink.href = "https://assets-khcn.khanhduy1407.live/uploads/" + fileUrl;
+                    fileLink.target = '_blank';
+                    
+                    // Check if the file is an image based on its extension
+                    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+                    const fileExtension = fileUrl.split('.').pop().toLowerCase();
+                    
+                    if (imageExtensions.includes(fileExtension)) {
+                        const imagePreview = document.createElement('img');
+                        imagePreview.src = fileLink.href;
+                        imagePreview.alt = fileUrl.split('/').pop();
+                        fileLink.appendChild(imagePreview);
+                    } else {
+                        const iconHTML = getFileIcon(fileUrl);
+                        fileLink.innerHTML = iconHTML + fileUrl.split('/').pop();
+                    }
+                    
+                    fileDiv.appendChild(fileLink);
+                    document.getElementById("danhSachDinhKem").appendChild(fileDiv);
+                });
+            });
+    }
+    
+    function getFileIcon(fileName) {
+        const ext = fileName.split('.').pop();
+        if (ext == 'png' || ext == 'jpg' || ext == 'jpeg') {
+            return '<i class="file-icon bi bi-file-earmark-image"></i>';
+        } else if (ext == 'pdf') {
+            return '<i class="file-icon bi bi-file-earmark-pdf"></i>';
+        } else if (ext == 'ppt' || ext == 'pptx') {
+            return '<i class="file-icon bi bi-file-earmark-slides"></i>';
+        } else if (ext == 'xls' || ext == 'xlsx' || ext == 'csv') {
+            return '<i class="file-icon bi bi-file-earmark-spreadsheet"></i>';
+        } else if (ext == 'doc' || ext == 'docx') {
+            return '<i class="file-icon bi bi-file-earmark-word"></i>';
+        } else if (ext == 'zip' || ext == 'rar' || ext == 'tar' || ext == 'gz' || ext == '7z') {
+            return '<i class="file-icon bi bi-file-earmark-zip"></i>';
+        } else {
+            return '<i class="file-icon bi bi-file-earmark-text"></i>';
+        }
+    }
+    
+    function convertDateString(dateString) {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+        
+        return `${day}/${month}/${year}`;
+    }
+    
+    function update() {
+        const idCauHoi = document.getElementById("idCauHoi").value;
+        
+        const tieuDe = document.getElementById("tieuDe").value;
+        // const traLoi = document.getElementById("traLoi").value;
+        const traLoi = quill.root.innerHTML;
+        const phanLoai = document.getElementById("phanLoai").value;
+        const congKhai = document.getElementById("congKhai").checked;
+        const thuongGap = document.getElementById("thuongGap").checked;
+        const a_by = document.getElementById("a_by").value;
+        
+        var currentDateTime = new Date();
+        currentDateTime.setHours(currentDateTime.getHours() + 7);
+        var date = currentDateTime.getDate();
+        var month = currentDateTime.getMonth() + 1;
+        var year = currentDateTime.getFullYear();
+        var formattedDate = year + "-" + month.toString().padStart(2, "0") + "-" + date.toString().padStart(2, "0");
+        
+        const data = {
+            idCauHoi,
+            tieuDe,
+            traLoi,
+            phanLoai,
+            congKhai,
+            thuongGap,
+            a_by,
+            a_dateSubmit: formattedDate,
+        };
+        console.log(data);
+        
+        fetch('https://localhost:44364/api/CauHoi/Update/' + idCauHoi, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (response.ok) {
+                    toastr.success('Sửa thành công');
+                    window.location.href = '/Admin/CauHoi';
+                } else {
+                    toastr.warning('Có lỗi');
+                }
+            });
+    }
+    
+    function deleteItem(id) {
+        if (confirm("Xác nhận xóa?")) {
+            fetch("https://localhost:44364/api/CauHoi/Delete/" + id, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + _token,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Xóa dữ liệu thành công!');
+                        window.location.href = '/Admin/CauHoi';
+                    } else {
+                        alert('Có lỗi xảy ra');
+                    }
+                });
+        }
+    }
+</script>

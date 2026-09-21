@@ -1,0 +1,49 @@
+﻿<!-- Sidebar -->
+@using QLKHCN_FE.ViewModel
+@model UserLogin
+@{
+  var user = HttpContext.Current.Session["CurrentUser"] as UserLogin;
+}
+
+<script>
+        const _idUser = "@user.IDUser";
+        const _hoTen = "@user.HoTen";
+        const _quyen = "@user.Role";
+        const _ngach = "@user.Ngach";
+        const _token = "@user.Token";
+</script>
+<script>
+  const elCard3 = document.getElementById("card3");
+  if (elCard3) {
+    if (_quyen == "Quyền cao nhất") {
+      document.getElementById("card3").style.display = "block";
+    } else {
+      document.getElementById("card3").style.display = "none";
+    }
+  }
+</script>
+
+<title>JDI SYSTEM</title>
+
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="@Url.Action("Index", "PhanBien")">
+        <i class="bi bi-house-door"></i>
+        <span>Trang chủ</span>
+      </a>
+    </li>
+
+    <li class="nav-item" id="card3">
+      <a class="nav-link collapsed" href="@Url.Action("BienTapChuyenMon","PhanBien")">
+        <i class="bi bi-journals"></i>
+        <span>Biên tập chuyên môn</span>
+      </a>
+    </li>
+
+  </ul>
+
+</aside><!-- End Sidebar-->

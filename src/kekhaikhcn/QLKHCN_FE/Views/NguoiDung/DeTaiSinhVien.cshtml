@@ -1,0 +1,2945 @@
+﻿@{
+  ViewBag.Title = "Đề Tài Sinh Viên";
+  Layout = "~/Views/Shared/_LayoutUserPage.cshtml";
+}
+
+@{
+  // Xác định năm học bắt đầu và năm học hiện tại
+  int startYear = 2022;
+  int currentYear = DateTime.Now.Year;
+
+  // Tạo danh sách năm học
+  var years = new List<dynamic>();
+  for (int year = startYear; year <= currentYear; year++)
+  {
+    string nextYear = (year + 1).ToString();
+    // add list
+    years.Add(new
+    {
+      Year = $"{year}",
+      YearOption = $"{year} - {nextYear}"
+    });
+  }
+
+  // Đảo ngược danh sách
+  years.Reverse();
+
+  // Xác định năm học hiện tại
+  // string currentYearOption = DateTime.Now.Day < 15 && DateTime.Now.Month < 10 ? $"{currentYear - 1} - {currentYear}" : $"{currentYear} - {currentYear + 1}";
+  // Tạm mặc định 2025 - 2026
+  string currentYearOption = "2025 - 2026";
+}
+
+<head>
+  <link href="~/Content/toastr.min.css" rel="stylesheet" />
+  <link href="~/Content/toastr.css" rel="stylesheet" />
+  <style>
+    #timeline {
+      width: 200px;
+      padding: 10px;
+      border: none;
+      background-color: #f2f2f2;
+      color: #333;
+      font-size: 16px;
+      border-radius: 5px;
+      outline: none;
+      transition: box-shadow 0.3s;
+      margin-left: 5%;
+    }
+
+      #timeline:hover {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      }
+
+      #timeline:focus {
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      }
+
+      #timeline::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #333;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+
+    .notification {
+      display: flex;
+      align-items: center;
+      background-color: #f8f8f8;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 12px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .notification-icon {
+      margin-right: 12px;
+      font-size: 24px;
+      color: #3276b1;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .notification-message {
+      margin: 0;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+
+
+<style>
+  input[readonly] {
+    background-color: #f8f8f8; /* Màu nền chỉ đọc */
+    cursor: not-allowed; /* Biểu tượng con trỏ chỉ đọc */
+  }
+</style>
+
+<div class="all">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">ĐỀ TÀI KHOA HỌC CÔNG NGHỆ</h3>
+    </div>
+
+    <!-- /.card-header -->
+    <div class="card-header">
+      <div class="col-md-12 d-flex justify-content-between">
+        @*<input class="btn btn-success btn-sm " id="signdt" type="submit" value="KÊ KHAI KHỐI LƯỢNG NCKH" onclick="location.href='/Article/Index'">*@
+        <div id="btnKeKhai"></div>
+        <select id="timeline">
+          @foreach (var year in years)
+          {
+            <option value="@year.Year" @(year.YearOption == currentYearOption ? "selected" : "")>@year.YearOption</option>
+          }
+        </select>
+        <input id="iddmxd" type="hidden" />
+        <input id="dmsx_status" type="hidden" />
+        <div class="btn-group">
+          <button type="button" class="btn btn btn-warning dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+            <span>EXPORT EXCEL</span>
+          </button>
+
+          <div class="dropdown-menu" role="menu" style="">
+            <a class="dropdown-item" onclick="ExportToExcelDeTaiUser(1)" href="#">Nhóm Nghiên Cứu Mạnh</a>
+            <a class="dropdown-item" onclick="ExportToExcelDeTaiUser(2)" href="#">Khoa/Viện</a>
+            <a class="dropdown-item" onclick="ExportToExcelDeTaiUser(3)" href="#">Trường</a>
+            <a class="dropdown-item" onclick="ExportToExcelDeTaiUser(4)" href="#">Nghiên Cứu Viên</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <p class="text-danger mb-0 "></p>
+    </div>
+
+    <div class="card-body" style="overflow-x: auto; width: 100%;">
+      <table id="example1" class="table table-bordered table-striped ">
+        <thead style="background-color: #007bff; color: white">
+          <tr>
+            <th>STT</th>
+            <th>Tên đề tài</th>
+            <th>Thời gian thực hiện</th>
+            <th>Vai trò</th>
+            <th>Sản phẩm</th>
+            <th>Kinh phí tài trợ</th>
+            <th colspan="2">Ghi chú</th>
+            <th>Trạng thái</th>
+            <th>Ký hợp đồng</th>
+            <th>Nghiệm thu</th>
+            <th colspan="2"></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="text-align:right">
+              Tổng
+            </td>
+            <td></td>
+            <td id="tongKinhPhi"></td>
+            <td colspan="7"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <!-- /.card-body -->
+  </div>
+</div>
+
+<div class="modal fade" id="modal-xl-create">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="card card-default">
+          <div class="card-header">
+            <h3 class="card-title">ĐĂNG KÝ ĐỀ TÀI KHOA HỌC CÔNG NGHỆ</h3>
+          </div>
+          <div class="card-body p-0">
+            <div class="bs-stepper" id="myStepper">
+              <div class="bs-stepper-header" role="tablist">
+                <!-- your steps here -->
+                <div class="step" data-target="#logins-part">
+                  <button type="button" class="step-trigger" role="tab" aria-controls="logins-part" id="logins-part-trigger">
+                    <span class="bs-stepper-circle">1</span>
+                    <span class="bs-stepper-label">Thông tin đề tài</span>
+                  </button>
+                </div>
+                <div class="line"></div>
+                <div class="step" data-target="#information-part">
+                  <button type="button" class="step-trigger" role="tab" aria-controls="information-part" id="information-part-trigger">
+                    <span class="bs-stepper-circle">2</span>
+                    <span class="bs-stepper-label">Thông tin chủ nhiệm, thành viên</span>
+                  </button>
+                </div>
+              </div>
+              <div class="bs-stepper-content">
+                <!-- your steps content here -->
+                <div id="logins-part" class="content" role="tabpanel" aria-labelledby="logins-part-trigger">
+                  <div class="form-group row">
+                    <label class="col-form-label" for="tenSanPhamKHCN">Tên đề tài *:</label>
+                    @* <input type="text" class="form-control col" id="tenSanPhamKHCN" placeholder="Tạp chí, bài báo, sách, kỷ yếu..." style="margin-left:2%" maxlength="150"> *@
+                    <textarea class="form-control col" id="tenSanPhamKHCN" placeholder="Tạp chí, bài báo, sách, kỷ yếu..." style="margin-left:2%;" oninput="countWords(this)"></textarea>
+                    <small id="wordCount" class="form-text text-muted" style="margin-left:2%;">0 / 100 từ</small>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-form-label" for="moTaSanPhamKHCN">Nội dung nghiên cứu *:</label>
+                    <textarea class="form-control col" id="moTaSanPhamKHCN" placeholder="Mô tả chi tiết các nội dung..." style="margin-left:2%"></textarea>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col row">
+                        <label class="col-form-label" for="tgThucHien">Thời gian thực hiện (tháng) *:</label>
+                        <input id="tgThucHien" type="number" placeholder="Nhập số từ 5 - 12" min="5" max="12" value="5" class="form-control col" style="margin-left:6%" />
+                    </div>
+                    <div class="form-group col row" style="margin-left:2%" id="san-pham-du-kien-section">
+                        <label class="col-form-label" for="sanPhamDuKien">Sản phẩm dự kiến *:</label>
+                        <select class="custom-select col-6" id="sanPhamDuKien" style="margin-left:4%">
+                          <option value="" selected disabled>-- Chọn loại hình --</option>
+                          <option value="Bài báo thuộc danh mục  SCIE, SSCI, AHCI có thứ hạng theo WoS">Bài báo thuộc danh mục  SCIE, SSCI, AHCI có thứ hạng theo WoS</option>
+                          <option value="Bài báo thuộc danh mục Scopus (theo Scimago)">Bài báo thuộc danh mục Scopus (theo Scimago)</option>
+                          <option value="Bài báo đăng hội nghị quốc tế uy tín được đánh chỉ mục bởi WoS hoặc Scopus">Bài báo đăng hội nghị quốc tế uy tín được đánh chỉ mục bởi WoS hoặc Scopus</option>
+                          <option value="Bài báo đăng trên tạp chí Phát triển và Hội nhập (UEF) viết bằng Tiếng Anh">Bài báo đăng trên tạp chí Phát triển và Hội nhập (UEF) viết bằng Tiếng Anh</option>
+                          <option value="Bài báo đăng tạp chí thuộc Hội đồng Giáo sư Nhà nước">Bài báo đăng tạp chí thuộc Hội đồng Giáo sư Nhà nước</option>
+                          <option value="Đề tài NCKH có sản phẩm được ứng dụng, chuyển giao công nghệ (do HĐT đặt hàng).">Đề tài NCKH có sản phẩm được ứng dụng, chuyển giao công nghệ (do HĐT đặt hàng).</option>
+                        </select>
+                    </div>
+                    <div class="form-group col row" id="chatLuong-form" style="margin-left:2%; display: none">
+                        <label class="col-form-label" for="chatLuong">Chất lượng *:</label>
+                        <select class="custom-select col-6" id="chatLuong" onchange="loadDinhMucKinhPhi()" style="margin-left:4%">
+                          @* tự động kiểm tra và tạo nếu có *@
+                        </select>
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label class="col-form-label" for="kinhPhi">Kinh phí dự kiến (VNĐ) *:</label>
+                    <input type="text" class="form-control col" id="kinhPhi" placeholder="Nhập tiền" readonly style="margin-left:2%" value="0">
+                  </div>
+                  <div class="row">
+                      <div class="col-4" id="file-dang-ky-section">
+                          <div class="form-group col row">
+                              <label class="col-form-label">File đăng ký:</label>
+                              <button type="button" id="fileDangKyBtn" class="btn btn-primary" onclick="document.getElementById('fileDangKy').click();" style="margin-left:4%">Chọn file</button>
+                              <input type="file" id="fileDangKy" onchange="handleSelectFile('fileDangKy', 'fileDangKyDetail')" style="display: none;" />
+                              <div id="fileDangKyDetail" class="col-12" style="margin-top: 1px;">
+                                  <!-- Danh sách file đã upload thành công sẽ hiển thị tại đây -->
+                              </div>
+                              @* TODO: Giải pháp tạm thời *@
+                              <input type="hidden" id="fileDangKy_hidden" />
+                          </div>
+                      </div>
+                      <div class="col-4" id="file-thuyet-minh-section">
+                          <div class="form-group col row">
+                              <label class="col-form-label">File thuyết minh:</label>
+                              <button type="button" id="fileThuyetMinhBtn" class="btn btn-primary" onclick="document.getElementById('fileThuyetMinh').click();" style="margin-left:4%">Chọn file</button>
+                              <input type="file" class="form-control col-7" id="fileThuyetMinh" onchange="handleSelectFile('fileThuyetMinh', 'fileThuyetMinhDetail')" style="display: none;" />
+                              <div id="fileThuyetMinhDetail" class="col-12" style="margin-top: 1px;">
+                                  <!-- Danh sách file đã upload thành công sẽ hiển thị tại đây -->
+                              </div>
+                              @* TODO: Giải pháp tạm thời *@
+                              <input type="hidden" id="fileThuyetMinh_hidden" />
+                          </div>
+                      </div>
+                      <div class="col-4" id="dinh-kem-ly-lich-section">
+                          <div class="form-group col row">
+                              <label class="col-form-label">Đính kèm lý lịch:</label>
+                              <button type="button" id="fileDinhKemLyLichBtn" class="btn btn-primary" onclick="document.getElementById('fileDinhKemLyLich').click();" style="margin-left:4%">Chọn file</button>
+                              <input type="file" class="form-control col-7" id="fileDinhKemLyLich" onchange="handleSelectFile('fileDinhKemLyLich', 'fileDinhKemLyLichDetail')" style="display: none;" />
+                              <div id="fileDinhKemLyLichDetail" class="col-12" style="margin-top: 1px;">
+                                  <!-- Danh sách file đã upload thành công sẽ hiển thị tại đây -->
+                              </div>
+                              @* TODO: Giải pháp tạm thời *@
+                              <input type="hidden" id="fileDinhKemLyLich_hidden" />
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row" id="ketqua" style="display:none">
+                  </div>
+                  <div class="row">
+                      <p>Biểu mẫu đăng ký lấy tại đây: 👉 <a href="https://www.uef.edu.vn/pkhcn/bieu-mau/de-tai-cap-truong-22222" target="_blank" title="Liên kết biểu mẫu đăng ký">Biểu mẫu đăng ký</a></p>
+                  </div>
+                  <div class="row" id="adminResponse" style="display: none">
+                      <hr />
+                      <div class="form-group col row">
+                          <label class="form-label">Phản hồi từ Hội đồng</label>
+                          <textarea id="ghiChu" class="col-12" disabled></textarea>
+                          <div class="form-group col-12" id="attachContainer" style="display: none">
+                              <span>Đính kèm</span>
+                              <div class="row" id="adminFileListContainer"></div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row" style="display: flex; justify-content: flex-end;">
+                    <button class="btn btn-success" onclick="check_result()">TIẾP TỤC</button>
+                  </div>
+                </div>
+
+                <div id="information-part" class="content" role="tabpanel" aria-labelledby="information-part-trigger">
+                  <div class="row">
+                    <div class="form-group col-6 row">
+                      <label class="col-form-label" for="sltgc">Chủ nhiệm</label>
+                      <input class="form-control col" style="margin-left:6%" type="number" placeholder="Số lượng chủ nhiệm" id="sltgc" disabled value="1" min="1" max="1" oninput="clear_hinhthuc()" />
+                    </div>
+                    <div class="form-group col row" style="margin-left:2%">
+                      <label class="col-form-label" for="sltgp">Số lượng thành viên</label>
+                      <input class="form-control col" style="margin-left:6%" type="number" placeholder="Số lượng thành viên" id="sltgp" min="0" value="0" oninput="clear_hinhthuc()" />
+                    </div>
+                  </div>
+
+                  <div class="form-group col-2" id="tongtacgia">
+                  </div>
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">THÔNG TIN TÁC GIẢ</h3>
+                    </div>
+                    @*Ban dt*@
+                    <div class="table-container">
+
+                      <table class="table table-bordered table-striped" style="width:100%" id="tbtacgiasl">
+                        <tbody id="addtacgiasl2" onchange="loadtable()">
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="table-container">
+                      <table class="table table-bordered table-striped" style="width:100%" id="tbtacgia2">
+                        <tbody id="addtacgia" onchange="loadtable()">
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <button class="btn btn-success" onclick="stepperPrevious()">VỀ TRƯỚC</button>
+                  <!--<input class="btn btn-info" id="inpsearchs" type="submit" value="Xác nhận gửi" onclick="handleSend()" style="margin-left:2%">-->
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <div class="modal-footer justify-content-between">
+          @*<a class="btn btn-outline-danger" href="@Url.Action("DeTai","NguoiDung")">THOÁT</a>*@
+          @* Sử dụng sự kiện đóng modal và reset form thay vì reload lại trang *@
+          <button class="btn btn-outline-danger" data-dismiss="modal">ĐÓNG</button>
+          <button type="button" class="btn btn btn-primary" id="btn-luu" style="display: none; margin-left:-62%" onclick="handleSend()" data-dismiss="modal">LƯU</button>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-xl-hop-dong">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="card card-default">
+          <div class="card-header">
+            <h3 class="card-title">THÔNG TIN HỢP ĐỒNG</h3>
+          </div>
+          <div class="card-body">
+            <input type="hidden" class="form-control col" id="fileStatus-hop-dong">
+          
+            <div class="form-group row">
+              <label class="col-form-label" for="tenSanPhamKHCN-hop-dong">Tên đề tài:</label>
+              <input type="text" class="form-control col" id="tenSanPhamKHCN-hop-dong" placeholder="Tạp chí, bài báo, sách, kỷ yếu..." style="margin-left:2%" readonly>
+            </div>
+            <div class="form-group row">
+              <label class="col-form-label" for="moTaSanPhamKHCN-hop-dong">Nội dung nghiên cứu:</label>
+              <input type="text" class="form-control col" id="moTaSanPhamKHCN-hop-dong" placeholder="Mô tả chi tiết các nội dung..." style="margin-left:2%" readonly>
+            </div>
+            <div class="row">
+              <div class="form-group col row">
+                  <label class="col-form-label" for="tgThucHien-hop-dong">Thời gian thực hiện (tháng):</label>
+                  <input id="tgThucHien-hop-dong" type="number" placeholder="Nhập số từ 5 - 12" min="5" max="12" value="5" class="form-control col" style="margin-left:6%" readonly />
+              </div>
+              <div class="form-group col row" style="margin-left:2%" id="san-pham-du-kien-section-hop-dong">
+                  <label class="col-form-label" for="sanPhamDuKien-hop-dong">Sản phẩm dự kiến:</label>
+                  <input type="text" class="form-control col" id="sanPhamDuKien-hop-dong" placeholder="" style="margin-left:4%" readonly>
+              </div>
+              <div class="form-group col row" id="chatLuong-form-hop-dong" style="margin-left:2%; display: none">
+                  <label class="col-form-label" for="chatLuong-hop-dong">Chất lượng:</label>
+                  <input type="text" class="form-control col" id="chatLuong-hop-dong" placeholder="" style="margin-left:4%" readonly>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-form-label" for="kinhPhi-hop-dong">Kinh phí dự kiến (VNĐ):</label>
+              <input type="text" class="form-control col" id="kinhPhi-hop-dong" placeholder="Nhập tiền" readonly style="margin-left:2%" value="0">
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group col row">
+                        <label class="col-form-label">File thuyết minh hoàn chỉnh (signed):</label>
+                        <button type="button" id="fileThuyetMinhHoanChinhBtn" class="btn btn-primary" onclick="document.getElementById('fileThuyetMinhHoanChinh').click();" style="margin-left:4%">Chọn file</button>
+                        <input type="file" id="fileThuyetMinhHoanChinh" onchange="handleSelectFile('fileThuyetMinhHoanChinh', 'fileThuyetMinhHoanChinhDetail')" style="display: none;" />
+                        <div id="fileThuyetMinhHoanChinhDetail" class="col-12" style="margin-top: 1px;">
+                            <!-- Danh sách file đã upload thành công sẽ hiển thị tại đây -->
+                        </div>
+                        @* TODO: Giải pháp tạm thời *@
+                        <input type="hidden" id="fileThuyetMinhHoanChinh_hidden" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group col row">
+                        <label class="col-form-label">File hợp đồng (.docx):</label>
+                        <button type="button" id="fileHopDongBtn" class="btn btn-primary" onclick="document.getElementById('fileHopDong').click();" style="margin-left:4%">Chọn file</button>
+                        <input type="file" class="form-control col-7" id="fileHopDong" onchange="handleSelectFile('fileHopDong', 'fileHopDongDetail')" style="display: none;" />
+                        <div id="fileHopDongDetail" class="col-12" style="margin-top: 1px;">
+                            <!-- Danh sách file đã upload thành công sẽ hiển thị tại đây -->
+                        </div>
+                        @* TODO: Giải pháp tạm thời *@
+                        <input type="hidden" id="fileHopDong_hidden" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group col row">
+                        <label class="col-form-label">QĐ giao nhiệm vụ (do P.KHCN-DAQT ghi):</label>
+                        <button type="button" id="fileQuyetDinhGiaoNhiemVuBtn" class="btn btn-primary" onclick="document.getElementById('fileQuyetDinhGiaoNhiemVu').click();" style="margin-left:4%">Chọn file</button>
+                        <input type="file" class="form-control col-7" id="fileQuyetDinhGiaoNhiemVu" onchange="handleSelectFile('fileQuyetDinhGiaoNhiemVu', 'fileQuyetDinhGiaoNhiemVuDetail')" style="display: none;" />
+                        <div id="fileQuyetDinhGiaoNhiemVuDetail" class="col-12" style="margin-top: 1px;">
+                            <!-- Danh sách file đã upload thành công sẽ hiển thị tại đây -->
+                        </div>
+                        @* TODO: Giải pháp tạm thời *@
+                        <input type="hidden" id="fileQuyetDinhGiaoNhiemVu_hidden" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <p>Biểu mẫu đăng ký lấy tại đây: 👉 <a href="https://www.uef.edu.vn/pkhcn/bieu-mau/de-tai-cap-truong-22222" target="_blank" title="Liên kết biểu mẫu đăng ký">Biểu mẫu đăng ký</a></p>
+            </div>
+            <div class="row" id="adminResponse-hop-dong" style="display: none">
+                <hr />
+                <div class="form-group col row">
+                    <label class="form-label">Phản hồi từ Hội đồng</label>
+                    <textarea id="ghiChu-hop-dong" class="col-12" disabled></textarea>
+                    <div class="form-group col-12" id="attachContainer-hop-dong" style="display: none">
+                        <span>Đính kèm</span>
+                        <div class="row" id="adminFileListContainer-hop-dong"></div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <div class="modal-footer justify-content-between">
+          @*<a class="btn btn-outline-danger" href="@Url.Action("DeTai","NguoiDung")">THOÁT</a>*@
+          @* Sử dụng sự kiện đóng modal và reset form thay vì reload lại trang *@
+          <button class="btn btn-outline-danger" data-dismiss="modal">ĐÓNG</button>
+          <button type="button" class="btn btn btn-primary" id="btn-luu-hop-dong" style="margin-left:-62%" onclick="handleSaveHopDong()">GỬI</button>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-xl-gia-han-nghiem-thu">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="card card-default">
+          <div class="card-header">
+            <h3 class="card-title">THÔNG TIN NGHIỆM THU / GIA HẠN / HỦY</h3>
+          </div>
+          <div class="card-body">
+            <input type="hidden" class="form-control col" id="fileStatus-gia-han-nghiem-thu">
+          
+            <div class="form-group row">
+              <label class="col-form-label" for="tenSanPhamKHCN-gia-han-nghiem-thu">Tên đề tài:</label>
+              <input type="text" class="form-control col" id="tenSanPhamKHCN-gia-han-nghiem-thu" placeholder="Tạp chí, bài báo, sách, kỷ yếu..." style="margin-left:2%" readonly>
+            </div>
+            <div class="form-group row">
+              <label class="col-form-label" for="moTaSanPhamKHCN-gia-han-nghiem-thu">Nội dung nghiên cứu:</label>
+              <input type="text" class="form-control col" id="moTaSanPhamKHCN-gia-han-nghiem-thu" placeholder="Mô tả chi tiết các nội dung..." style="margin-left:2%" readonly>
+            </div>
+            <div class="row">
+              <div class="form-group col row">
+                  <label class="col-form-label" for="tgThucHien-gia-han-nghiem-thu">Thời gian thực hiện (tháng):</label>
+                  <input id="tgThucHien-gia-han-nghiem-thu" type="number" placeholder="Nhập số từ 5 - 12" min="5" max="12" value="5" class="form-control col" style="margin-left:6%" readonly />
+              </div>
+              <div class="form-group col row" style="margin-left:2%" id="san-pham-du-kien-section-gia-han-nghiem-thu">
+                  <label class="col-form-label" for="sanPhamDuKien-gia-han-nghiem-thu">Sản phẩm dự kiến:</label>
+                  <input type="text" class="form-control col" id="sanPhamDuKien-gia-han-nghiem-thu" placeholder="" style="margin-left:4%" readonly>
+              </div>
+              <div class="form-group col row" id="chatLuong-form-gia-han-nghiem-thu" style="margin-left:2%; display: none">
+                  <label class="col-form-label" for="chatLuong-gia-han-nghiem-thu">Chất lượng:</label>
+                  <input type="text" class="form-control col" id="chatLuong-gia-han-nghiem-thu" placeholder="" style="margin-left:4%" readonly>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-form-label" for="kinhPhi-gia-han-nghiem-thu">Kinh phí dự kiến (VNĐ):</label>
+              <input type="text" class="form-control col" id="kinhPhi-gia-han-nghiem-thu" placeholder="Nhập tiền" readonly style="margin-left:2%" value="0">
+            </div>
+            <div class="row">
+            <div class="row">
+                <div class="col-12 mb-3">
+                    <label class="col-form-label" for="thaoTacNghiemThu">Thao tác hoàn tất đề tài:</label>
+                    <select class="custom-select" id="thaoTacNghiemThu" onchange="handleThaoTacChange()">
+                        <option value="" selected disabled>-- Chọn thao tác --</option>
+                        <option value="nghiemThu">Đăng ký nghiệm thu</option>
+                        <option value="huyDeTai">Xin hủy đề tài</option>
+                        <option value="giaHan">Xin gia hạn thực hiện</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Nhóm 1: Nghiệm thu -->
+            <div class="row" id="group-nghiem-thu" style="display: none;">
+                <div class="col-6">
+                    <div class="form-group col row">
+                        <label class="col-form-label">File đăng ký nghiệm thu (.docx):</label>
+                        <button type="button" id="fileDangKyNghiemThuBtn" class="btn btn-primary" onclick="document.getElementById('fileDangKyNghiemThu').click();" style="margin-left:4%">Chọn file</button>
+                        <input type="file" id="fileDangKyNghiemThu" onchange="handleSelectFile('fileDangKyNghiemThu', 'fileDangKyNghiemThuDetail')" style="display: none;" />
+                        <div id="fileDangKyNghiemThuDetail" class="col-12" style="margin-top: 1px;"></div>
+                        <input type="hidden" id="fileDangKyNghiemThu_hidden" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group col row">
+                        <label class="col-form-label">Minh chứng nghiệm thu (bài báo,...):</label>
+                        <button type="button" id="fileMinhChungNghiemThuBtn" class="btn btn-primary" onclick="document.getElementById('fileMinhChungNghiemThu').click();" style="margin-left:4%">Chọn file</button>
+                        <input type="file" class="form-control col-7" id="fileMinhChungNghiemThu" onchange="handleSelectFile('fileMinhChungNghiemThu', 'fileMinhChungNghiemThuDetail')" style="display: none;" />
+                        <div id="fileMinhChungNghiemThuDetail" class="col-12" style="margin-top: 1px;"></div>
+                        <input type="hidden" id="fileMinhChungNghiemThu_hidden" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nhóm 2: Hủy đề tài -->
+            <div class="row" id="group-huy-de-tai" style="display: none;">
+                <div class="col-6">
+                    <div class="form-group col row">
+                        <label class="col-form-label">File xin hủy đề tài:</label>
+                        <button type="button" id="fileXinHuyDeTaiBtn" class="btn btn-primary" onclick="document.getElementById('fileXinHuyDeTai').click();" style="margin-left:4%">Chọn file</button>
+                        <input type="file" id="fileXinHuyDeTai" onchange="handleSelectFile('fileXinHuyDeTai', 'fileXinHuyDeTaiDetail')" style="display: none;" />
+                        <div id="fileXinHuyDeTaiDetail" class="col-12" style="margin-top: 1px;"></div>
+                        <input type="hidden" id="fileXinHuyDeTai_hidden" />
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group col row">
+                        <label class="col-form-label">File thanh lý (hủy) HĐ:</label>
+                        <button type="button" id="fileThanhLyHuyHDBtn" class="btn btn-primary" onclick="document.getElementById('fileThanhLyHuyHD').click();" style="margin-left:4%">Chọn file</button>
+                        <input type="file" class="form-control col-7" id="fileThanhLyHuyHD" onchange="handleSelectFile('fileThanhLyHuyHD', 'fileThanhLyHuyHDDetail')" style="display: none;" />
+                        <div id="fileThanhLyHuyHDDetail" class="col-12" style="margin-top: 1px;"></div>
+                        <input type="hidden" id="fileThanhLyHuyHD_hidden" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nhóm 3: Gia hạn -->
+            <div class="row" id="group-gia-han" style="display: none;">
+                <div class="col-12">
+                    <div class="form-group col row">
+                        <label class="col-form-label">File gia hạn hợp đồng:</label>
+                        <button type="button" id="fileGiaHanThucHienDeTaiBtn" class="btn btn-primary" onclick="document.getElementById('fileGiaHanThucHienDeTai').click();" style="margin-left:4%">Chọn file</button>
+                        <input type="file" class="form-control col-7" id="fileGiaHanThucHienDeTai" onchange="handleSelectFile('fileGiaHanThucHienDeTai', 'fileGiaHanThucHienDeTaiDetail')" style="display: none;" />
+                        <div id="fileGiaHanThucHienDeTaiDetail" class="col-12" style="margin-top: 1px;"></div>
+                        <input type="hidden" id="fileGiaHanThucHienDeTai_hidden" />
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="row">
+                <p>Hướng dẫn gia hạn / nghiệm thu đề tài tại đây: 👉 <a href="https://www.uef.edu.vn/pkhcn/bieu-mau/de-tai-cap-truong-22222" target="_blank" title="Liên kết biểu mẫu đăng ký">Biểu mẫu đăng ký</a></p>
+            </div>
+            <div class="row" id="adminResponse-gia-han-nghiem-thu" style="display: none">
+                <hr />
+                <div class="form-group col row">
+                    <label class="form-label">Phản hồi từ Hội đồng</label>
+                    <textarea id="ghiChu-gia-han-nghiem-thu" class="col-12" disabled></textarea>
+                    <div class="form-group col-12" id="attachContainer-gia-han-nghiem-thu" style="display: none">
+                        <span>Đính kèm</span>
+                        <div class="row" id="adminFileListContainer-gia-han-nghiem-thu"></div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <div class="modal-footer justify-content-between">
+          @*<a class="btn btn-outline-danger" href="@Url.Action("DeTai","NguoiDung")">THOÁT</a>*@
+          @* Sử dụng sự kiện đóng modal và reset form thay vì reload lại trang *@
+          <button class="btn btn-outline-danger" data-dismiss="modal">ĐÓNG</button>
+          <button type="button" class="btn btn btn-primary" id="btn-luu-gia-han-nghiem-thu" style="margin-left:-62%" onclick="handleSaveNghiemThu()">GỬI</button>
+        </div>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<style>
+  div[class^="col"].file-item {
+    position: relative;
+    padding: 10px;
+    background: #f5f5f5;
+    border: 2px solid white;
+  }
+
+  .table-container {
+    max-height: 300px; /* Đặt chiều cao tối đa của khu vực cuộn */
+    overflow-y: auto; /* Cho phép cuộn dọc khi nội dung vượt quá kích thước */
+    overflow-x: auto;
+  }
+
+  #tbtacgiasl {
+    width: 100%; /* Đảm bảo bảng rộng 100% trong khu vực cuộn */
+    /* Thêm các định dạng CSS khác cho bảng */
+  }
+</style>
+<script>
+    // không cho phép nhập nhỏ hơn 5 hoặc lớn hơn 12
+    document.getElementById('tgThucHien').addEventListener('input', function () {
+        var value = parseInt(this.value);
+        var min = parseInt(this.min);
+        var max = parseInt(this.max);
+    
+        if (value < min) {
+            this.value = min;
+        } else if (value > max) {
+            this.value = max;
+        }
+    });
+    
+    function countWords(textarea) {
+      const originalText = textarea.value;
+    
+      // Lọc ra từ hợp lệ (chỉ chữ, số, tiếng Việt)
+      const validWords = originalText
+        .replace(/[^0-9A-Za-zÀ-ỹ\s]/g, " ") // ký tự đặc biệt → dấu cách
+        .trim()
+        .split(/\s+/)
+        .filter(w => w.length > 0);
+    
+      // Giới hạn 100 từ cho việc đếm (không giới hạn nhập)
+      const wordCount = Math.min(validWords.length, 100);
+    
+      // Hiển thị số từ
+      document.getElementById("wordCount").innerText = `${wordCount} / 100 từ`;
+    }
+    
+    // kiểm tra thay đổi loại sản phẩm dự kiến
+    document.getElementById('sanPhamDuKien').addEventListener('change', function () {
+        loadSPDuKien();
+    });
+    
+    var ketQuaKhiNghiemThu = document.getElementById("ketqua");
+    
+    function loadSPDuKien() {
+        var selectedValue = document.getElementById('sanPhamDuKien').value;
+        
+        if (selectedValue === "Bài báo thuộc danh mục  SCIE, SSCI, AHCI có thứ hạng theo WoS") {
+            document.getElementById('chatLuong-form').style.display = "unset";
+            document.getElementById('chatLuong').value = "";
+            document.getElementById('chatLuong').innerHTML =
+                '<option value="" selected disabled>-- Chọn chất lượng --</option>' +
+                '<option value="WoS Q1">WoS Q1</option>' +
+                '<option value="WoS Q2">WoS Q2</option>' +
+                '<option value="WoS Q3">WoS Q3</option>' +
+                '<option value="WoS Q4">WoS Q4</option>';
+        } else if (selectedValue === "Bài báo thuộc danh mục Scopus (theo Scimago)") {
+            document.getElementById('chatLuong-form').style.display = "unset";
+            document.getElementById('chatLuong').value = "";
+            document.getElementById('chatLuong').innerHTML =
+                '<option value="" selected disabled>-- Chọn chất lượng --</option>' +
+                '<option value="Scopus Q1">Scopus Q1</option>' +
+                '<option value="Scopus Q2">Scopus Q2</option>' +
+                '<option value="Scopus Q3">Scopus Q3</option>' +
+                '<option value="Scopus Q4">Scopus Q4</option>';
+        } else if (selectedValue === "Bài báo đăng hội nghị quốc tế uy tín được đánh chỉ mục bởi WoS hoặc Scopus") {
+            document.getElementById('chatLuong-form').style.display = "unset";
+            document.getElementById('chatLuong').value = "";
+            document.getElementById('chatLuong').innerHTML =
+                '<option value="" selected disabled>-- Chọn chất lượng --</option>' +
+                '<option value="Có báo cáo (báo cáo viên thuộc UEF)">Có báo cáo (báo cáo viên thuộc UEF)</option>' +
+                '<option value="Không có báo cáo">Không có báo cáo</option>';
+        } else if (selectedValue === "Bài báo đăng tạp chí thuộc Hội đồng Giáo sư Nhà nước") {
+            document.getElementById('chatLuong-form').style.display = "unset";
+            document.getElementById('chatLuong').value = "";
+            document.getElementById('chatLuong').innerHTML =
+                '<option value="" selected disabled>-- Chọn chất lượng --</option>' +
+                '<option value="Tạp chí được tính 1 điểm + sản phẩm đào tạo">Tạp chí được tính 1 điểm + sản phẩm đào tạo</option>' +
+                '<option value="Tạp chí được tính 1 điểm">Tạp chí được tính 1 điểm</option>' +
+                '<option value="Tạp chí được tính từ 0,5 đến 0,75 điểm">Tạp chí được tính từ 0,5 đến 0,75 điểm</option>';
+        } else {
+            document.getElementById('chatLuong-form').style.display = "none";
+            document.getElementById('chatLuong').value = "Trống";
+        }
+        
+        loadDinhMucKinhPhi();
+        
+        ketQuaKhiNghiemThu.style.display = "block";
+        ketQuaKhiNghiemThu.innerHTML = `<label>Tiết chuẩn khi nghiệm thu:</label> <label id="tietchuan">0</label>;
+                            <label>Điểm:</label> <label id="diem">10</label>`;
+    }
+    
+    function loadDinhMucKinhPhi() {
+        var selectedValue = document.getElementById('sanPhamDuKien').value;
+        var selectedChatLuong = document.getElementById('chatLuong').value;
+        
+        var kinhPhi = 0;
+        
+        if (selectedValue == "Bài báo thuộc danh mục  SCIE, SSCI, AHCI có thứ hạng theo WoS") {
+            if (selectedChatLuong == "WoS Q1") {
+                kinhPhi = 100000000;
+            } else if (selectedChatLuong == "WoS Q2") {
+                kinhPhi = 80000000;
+            } else if (selectedChatLuong == "WoS Q3") {
+                kinhPhi = 60000000;
+            } else if (selectedChatLuong == "WoS Q4") {
+                kinhPhi = 48000000;
+            }
+        } else if (selectedValue == "Bài báo thuộc danh mục Scopus (theo Scimago)") {
+            if (selectedChatLuong == "Scopus Q1") {
+                kinhPhi = 55000000;
+            } else if (selectedChatLuong == "Scopus Q2") {
+                kinhPhi = 45000000;
+            } else if (selectedChatLuong == "Scopus Q3") {
+                kinhPhi = 35000000;
+            } else if (selectedChatLuong == "Scopus Q4") {
+                kinhPhi = 25000000;
+            }
+        } else if (selectedValue == "Bài báo đăng hội nghị quốc tế uy tín được đánh chỉ mục bởi WoS hoặc Scopus") {
+            if (selectedChatLuong == "Có báo cáo (báo cáo viên thuộc UEF)") {
+                kinhPhi = 18000000;
+            } else if (selectedChatLuong == "Không có báo cáo") {
+                kinhPhi = 15000000;
+            }
+        } else if (selectedValue == "Bài báo đăng trên tạp chí Phát triển và Hội nhập (UEF) viết bằng Tiếng Anh") {
+            kinhPhi = 12000000;
+        } else if (selectedValue == "Bài báo đăng tạp chí thuộc Hội đồng Giáo sư Nhà nước") {
+            if (selectedChatLuong == "Tạp chí được tính 1 điểm + sản phẩm đào tạo") {
+                kinhPhi = 18000000;
+            } else if (selectedChatLuong == "Tạp chí được tính 1 điểm") {
+                kinhPhi = 15000000;
+            } else if (selectedChatLuong == "Tạp chí được tính từ 0,5 đến 0,75 điểm") {
+                kinhPhi = 10000000;
+            }
+        } else if (selectedValue == "Đề tài NCKH có sản phẩm được ứng dụng, chuyển giao công nghệ (do HĐT đặt hàng).") {
+            kinhPhi = 10000000;
+        }
+        
+        document.getElementById('kinhPhi').value = kinhPhi
+        document.getElementById('kinhPhi').setAttribute('title', formatCurrency(kinhPhi));
+    }
+    
+    
+    ////alert(_idUser);
+    async function getData() {
+        var timeline = document.getElementById("timeline").value;
+        await fetch('https://localhost:44364/api/DanhMucXetDuyetSinhVien/Get-by-userid?userid=' + _idUser + "&startTimes=" + timeline, {
+              headers: {
+                  'Authorization': 'Bearer ' + _token,
+                  'Content-Type': 'application/json'
+              }
+        })
+            .then(response => response.json())
+            .then(data => {
+                var tongTien = 0;
+                var stt = 1;
+                const tbody = document.querySelector('#example1 tbody');
+                tbody.innerHTML = "";
+                data.forEach(function (row) {
+                    ////////alert(row.groupUser);
+                    if (row.status == "Đã nộp hồ sơ") {
+                        txtcolor = "rgba(77, 77, 79, 1)";
+                        bgcolor = "rgba(77, 77, 79, 0.07)";
+                    } else if (row.status == "Đã nhận hồ sơ") {
+                        txtcolor = "rgba(27, 162, 180, 1)";
+                        bgcolor = "rgba(27, 162, 180, 0.07)";
+                    } else if (row.status == "Đã gửi phản biện") {
+                        txtcolor = "rgba(16, 117, 187, 1)";
+                        bgcolor = "rgba(16, 117, 187, 0.07)";
+                    } else if (row.status == "Không tài trợ") {
+                        txtcolor = "rgba(200, 16, 47, 1)";
+                        bgcolor = "rgba(200, 16, 47, 0.07)";
+                    } else if (row.status == "Nộp lại/Chỉnh sửa") {
+                        txtcolor = "rgba(200, 16, 47, 1)";
+                        bgcolor = "rgba(200, 16, 47, 0.07)";
+                    } else {
+                        txtcolor = "rgba(42, 148, 70, 1)";
+                        bgcolor = "rgba(42, 148, 70, 0.07)";
+                    }
+
+                    if (row.status_hopDong == "Chủ nhiệm kiểm tra, nộp lại hồ sơ và hợp đồng") {
+                        txtcolor_hopDong = "rgba(77, 77, 79, 1)";
+                        bgcolor_hopDong = "rgba(77, 77, 79, 0.07)";
+                    } else if (row.status_hopDong == "Đã nộp hồ sơ hoàn chỉnh + hợp đồng") {
+                        txtcolor_hopDong = "rgba(16, 117, 187, 1)";
+                        bgcolor_hopDong = "rgba(16, 117, 187, 0.07)";
+                    } else if (row.status_hopDong == "Không tài trợ") {
+                        txtcolor_hopDong = "rgba(200, 16, 47, 1)";
+                        bgcolor_hopDong = "rgba(200, 16, 47, 0.07)";
+                    } else {
+                        txtcolor_hopDong = "rgba(42, 148, 70, 1)";
+                        bgcolor_hopDong = "rgba(42, 148, 70, 0.07)";
+                    }
+
+                    if (row.status_nghiemThu == "Đăng ký nghiệm thu/gia hạn/hủy") {
+                        txtcolor_nghiemThu = "rgba(77, 77, 79, 1)";
+                        bgcolor_nghiemThu = "rgba(77, 77, 79, 0.07)";
+                    } else if (row.status_nghiemThu == "Thông báo: Đến thời hạn nghiệm thu") {
+                        txtcolor_nghiemThu = "rgba(27, 162, 180, 1)";
+                        bgcolor_nghiemThu = "rgba(27, 162, 180, 0.07)";
+                    } else if (row.status_nghiemThu == "Đã gửi hội đồng nghiệm thu") {
+                        txtcolor_nghiemThu = "rgba(16, 117, 187, 1)";
+                        bgcolor_nghiemThu = "rgba(16, 117, 187, 0.07)";
+                    } else if (row.status_nghiemThu == "Thanh lý hợp đồng (đề tài đã nghiệm thu ĐẠT)") {
+                        txtcolor_nghiemThu = "rgb(18,82,124)";
+                        bgcolor_nghiemThu = "rgb(255,255,255)";
+                    } else if (row.status_nghiemThu == "Thanh lý HỦY đề tài") {
+                        txtcolor_nghiemThu = "rgba(200, 16, 47, 1)";
+                        bgcolor_nghiemThu = "rgba(200, 16, 47, 0.07)";
+                    } else if (row.status_nghiemThu == "Nộp lại/chỉnh sửa hồ sơ nghiệm thu, gia hạn, hủy") {
+                        txtcolor_nghiemThu = "rgba(200, 16, 47, 1)";
+                        bgcolor_nghiemThu = "rgba(200, 16, 47, 0.07)";
+                    } else {
+                        txtcolor_nghiemThu = "rgba(42, 148, 70, 1)";
+                        bgcolor_nghiemThu = "rgba(42, 148, 70, 0.07)";
+                    }
+
+                    var grtg = row.groupUser;
+
+                    var tacgia = getOneAuthor(grtg, _idUser);
+                    ////////alert(tacgia + "/// " + _idUser);
+                    
+                    var tr = document.createElement('tr');
+                    try {
+                        var tempTr = 
+                            "<td>" + stt + "</td>" +
+                            "<td>" + row.tenBaiBao + "</td>" +
+                            "<td>" + row.thoiGianThucHien + "</td>" +
+                            "<td>" + tacgia[3] + "</td>" +
+                            "<td>" + row.category.toString().replace('|~|', ' – ') + "</td>" +
+                            "<td>" + formatCurrency(row.kinhPhi) + "</td>";
+                        
+                        if (row.ghiChu) {
+                            tempTr += "<td width='15%'>" + row.ghiChu + "</td>";
+                                
+                            if (row.fileList && row.fileList.length > 0) {
+                                let listFileDOM = "";
+                                row.fileList.forEach((fileUrl) => {
+                                    listFileDOM += `<a href="${fileUrl}" target="_blank">${getFileIcon(fileUrl)}</a>`
+                                });
+                                tempTr += "<td>" + listFileDOM + "</td>";
+                            } else {
+                                tempTr += "<td></td>";
+                            }
+                        } else {
+                            tempTr +=
+                                "<td></td>" +
+                                "<td></td>"
+                        }
+                            
+                        tempTr +=
+                            "<td><span class='badge' style='color:" + txtcolor + "!important; background-color:" + bgcolor + "!important;'>" + row.status + "</span></td>";
+                        
+                        if (row.status_hopDong) {
+                            tempTr +=
+                                "<td><span class='badge' style='color:" + txtcolor_hopDong + "!important; background-color:" + bgcolor_hopDong + "!important;'>" + row.status_hopDong + "</span></td>";
+                        } else if (row.status == "Đồng ý tài trợ" && (row.status_hopDong == "" || row.status_hopDong == null)) {
+                            tempTr += "<td><span class='badge' style='color:black'>Đang tạo hợp đồng</span></td>";
+                        } else {
+                            tempTr += "<td></td>";
+                        }
+                        if (row.status_nghiemThu) {
+                            tempTr +=
+                                "<td><span class='badge' style='color:" + txtcolor_nghiemThu + "!important; background-color:" + bgcolor_nghiemThu + "!important;'>" + row.status_nghiemThu + "</span></td>";
+                        } else if (row.status_hopDong == "Đã ký hợp đồng KHCN + Tiến hành thực hiện đề tài" && (row.status_nghiemThu == "" || row.status_nghiemThu == null)) {
+                            tempTr += "<td><span class='badge' style='color:black'>Theo dõi tiến độ</span></td>";
+                        } else {
+                            tempTr += "<td></td>";
+                        }
+                        
+                        if (tacgia[3].includes("Thành viên")) {
+                            tempTr +=
+                                "<td width='3%'><a type='button' data-toggle='modal' data-target='#modal-xl-create' data-backdrop='static' onclick='chixemchitiet(" + row.idDanhMuc + ")'><i class='fas fa-eye' style='color: #3276b1;'></i></a></td>" +
+                                "<td width='3%'></td>";
+                        } else if (tacgia[3].includes("Chủ nhiệm")) {
+                            if (row.status == "Đồng ý tài trợ" && (row.status_hopDong == null || row.status_hopDong == "" || row.status_hopDong == "Chủ nhiệm kiểm tra, nộp lại hồ sơ và hợp đồng")) {
+                                tempTr +=
+                                    "<td width='3%'><a type='button' data-toggle='modal' data-target='#modal-xl-hop-dong' data-backdrop='static' onclick='xemHopDong(" + row.idDanhMuc + ")'><i class='fas fa-edit' style='color: #3276b1;'></i></a></td>" +
+                                    "<td width='3%'></td>";
+                            } else if (row.status == "Đồng ý tài trợ" && row.status_hopDong != "Chủ nhiệm kiểm tra, nộp lại hồ sơ và hợp đồng") {
+                                if (row.status_hopDong == "Đã ký hợp đồng KHCN + Tiến hành thực hiện đề tài" && (row.status_nghiemThu == null || row.status_nghiemThu == "" || row.status_nghiemThu == "Thông báo: Đến thời hạn nghiệm thu" || row.status_nghiemThu == "Nộp lại/chỉnh sửa hồ sơ nghiệm thu, gia hạn, hủy")) {
+                                    tempTr += "<td width='3%'><a type='button' data-toggle='modal' data-target='#modal-xl-gia-han-nghiem-thu' data-backdrop='static' onclick='xemThongTinGiaHanNghiemThu(" + row.idDanhMuc + ")'><i class='fas fa-edit' style='color: #3276b1;'></i></a></td>";
+                                } else {
+                                    tempTr += "<td width='3%'></td>";
+                                }
+                                tempTr += "<td width='3%'></td>";
+                            } else if (row.status == "Không tài trợ") {
+                                tempTr +=
+                                    "<td width='3%'></td>" +
+                                    "<td width='3%'></td>";
+                            } else if (row.status == "Nộp lại/Chỉnh sửa") {
+                                tempTr +=
+                                    "<td width='3%'><a type='button' data-toggle='modal' data-target='#modal-xl-create' data-backdrop='static' onclick='xemchitiet(" + row.idDanhMuc + ")'><i class='fas fa-edit' style='color: #3276b1;'></i></a></td>" +
+                                    "<td width='3%'></td>";
+                            } else {
+                                tempTr +=
+                                    "<td width='3%'><a type='button' data-toggle='modal' data-target='#modal-xl-create' data-backdrop='static' onclick='xemchitiet(" + row.idDanhMuc + ")'><i class='fas fa-eye' style='color: #3276b1;'></i></a></td>" +
+                                    "<td width='3%'></td>";
+                            }
+                        }
+                        
+                        tr.innerHTML = tempTr;
+
+                        var date = new Date(row.dateSubmit_now);
+                        var day = date.getDate().toString().padStart(2, "0");
+                        var month = (date.getMonth() + 1).toString().padStart(2, "0");
+                        var year = date.getFullYear();
+                        tr.setAttribute("title", `Dữ liệu bài báo này được cập nhật vào lúc ${day}/${month}/${year}`);
+
+                        tbody.appendChild(tr);
+                        stt += 1;
+                        tongTien += row.kinhPhi;
+                    } catch { }
+
+                });
+                document.getElementById("tongKinhPhi").textContent = formatCurrency(tongTien);
+                $(function () {
+                    $("#example1").DataTable({
+                      "retrieve": true, // Cho phép sử dụng lại bảng đã được khởi tạo mà không cần khởi tạo lại
+                      "paging": true,
+                      "searching": true,
+                      "ordering": true,
+                      "info": true,
+                      "lengthChange": false,
+                      "autoWidth": false,
+                      "responsive": false, // Đặt về false để sử dụng scrollX hiệu quả
+                      "fixedHeader": true,
+                    })
+                });
+            });
+    }
+
+    function loadtable() {
+        var sltgc = Number(document.querySelector('#sltgc').value);
+        var sltgp = Number(document.querySelector('#sltgp').value);
+
+        var sltg = sltgc + sltgp;
+        try {
+            var tietchuan = Number(document.querySelector('#tietchuan').textContent);
+
+        } catch {
+            toastr.warning("Chọn hình thức thanh toán!");
+        }
+        try {
+            var diem = Number(document.querySelector('#diem').textContent);
+        } catch { }
+        var table = document.getElementById("tablethanhtoan");
+        var trtable = ``;
+        try {
+            var optionshdsv = document.querySelector('#loaiCongTrinh');
+            var hdsv = optionshdsv.options[optionshdsv.selectedIndex].value;
+        } catch { }
+        var tongdonggop = 0;
+        for (let j = 0; j < sltg; j++) {
+            try {
+                var donggop = Number(document.querySelector('#donggop-' + j).value);
+
+            } catch { }
+            tongdonggop += donggop;
+            if (tongdonggop > 100) {
+
+                try { document.querySelector('#donggop-' + j).value = 0; } catch { }
+            }
+
+        }
+        if (tongdonggop > 100) {
+            toastr.warning('Đóng góp quá 100%!');
+        } else {
+            for (let i = 0; i < sltg; i++) {
+                trtable += `<tr>
+                    <td>${i + 1}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td style="display: none"></td>
+                    <td style="display: none"></td>
+                    <td style="display: none"></td>
+                    <td style="display: none"></td>
+                </tr>`;
+            }
+            table.innerHTML = trtable;
+            for (let i = 0; i < sltg; i++) {
+                try { var tacgia = document.querySelector('#inp-username-id-mail-' + i).value; } catch { }
+                table.rows[i].cells[1].innerHTML = tacgia;
+            }
+            for (let i = 0; i < sltg; i++) {
+                var optionscongtac = document.querySelector('#coquancongtac-' + i);
+                try { var textcongtac = optionscongtac.options[optionscongtac.selectedIndex].textContent; } catch { }
+                table.rows[i].cells[2].innerHTML = textcongtac;
+            } for (let i = 0; i < sltg; i++) {
+                var optionstg = document.querySelector('#tg-' + i);
+                try { var texttg = optionstg.options[optionstg.selectedIndex].textContent; } catch { }
+                table.rows[i].cells[3].innerHTML = texttg;
+            }
+            if (sltgc == 1 && sltgp > 0) {
+                for (let i = 0; i < sltg; i++) {
+                    var coquan = table.rows[0].cells[2].textContent;
+                    try { var donggop = Number(document.querySelector('#donggop-' + i).value); } catch { }
+                    if (sltg > 1) {
+                        if (coquan.includes("Cơ quan công tác ngoài UEF") || coquan.includes(" --Chọn cơ quan công tác--")) {
+                            table.rows[0].cells[4].innerHTML = `0`;
+                            table.rows[0].cells[5].innerHTML = `0`;
+                            table.rows[0].cells[6].innerHTML = `0`;
+                            table.rows[0].cells[7].innerHTML = `0`;
+                            if (table.rows[i].cells[2].textContent.includes("Cơ quan công tác trong UEF")) {
+                                table.rows[i].cells[4].innerHTML = `0`;
+                                table.rows[i].cells[5].innerHTML = `0`;
+                                table.rows[i].cells[6].innerHTML = `${diem * 0.2 / sltgp}`;
+                                if (hdsv == "HDSV") {
+                                    table.rows[i].cells[7].innerHTML = `${tietchuan / sltg}`;
+                                } else {
+                                    table.rows[i].cells[7].innerHTML = `${tietchuan * 0.2 / sltgp}`;
+                                }
+                            } else if (table.rows[i].cells[2].textContent.includes("Cơ quan công tác ngoài UEF") || table.rows[i].cells[2].textContent.includes(" --Chọn cơ quan công tác--")) {
+                                table.rows[i].cells[4].innerHTML = `0`;
+                                table.rows[i].cells[5].innerHTML = `0`;
+                                table.rows[i].cells[6].innerHTML = `0`;
+                                table.rows[i].cells[7].innerHTML = `0`;
+                            }
+                        } else if (coquan.includes("Cơ quan công tác trong UEF")) {
+                            table.rows[0].cells[4].innerHTML = `0`;
+                            table.rows[0].cells[5].innerHTML = `0`;
+                            table.rows[0].cells[6].innerHTML = `${diem * 0.8}`;
+                            if (hdsv == "HDSV") {
+                                table.rows[i].cells[7].innerHTML = `${tietchuan / sltg}`;
+                            } else {
+                                table.rows[0].cells[7].innerHTML = `${tietchuan * 0.8}`;
+                            }
+                            if (table.rows[i].cells[2].textContent.includes("Cơ quan công tác trong UEF")) {
+                                table.rows[i].cells[4].innerHTML = `0`;
+                                table.rows[i].cells[5].innerHTML = `0`;
+                                table.rows[i].cells[6].innerHTML = `${diem * 0.2 / sltgp}`;
+                                if (hdsv == "HDSV") {
+                                    table.rows[i].cells[7].innerHTML = `${tietchuan / sltg}`;
+                                } else {
+                                    table.rows[i].cells[7].innerHTML = `${tietchuan * 0.2 / sltgp}`;
+                                }
+                            } else if (table.rows[i].cells[2].textContent.includes("Cơ quan công tác ngoài UEF") || table.rows[i].cells[2].textContent.includes(" --Chọn cơ quan công tác--")) {
+                                table.rows[i].cells[4].innerHTML = `0`;
+                                table.rows[i].cells[5].innerHTML = `0`;
+                                table.rows[i].cells[6].innerHTML = `0`;
+                                table.rows[i].cells[7].innerHTML = `0`;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (sltgc == 1 && sltg == 1) {
+                var coquan = table.rows[0].cells[2].textContent;
+                try {
+                    var donggop = Number(document.querySelector('#donggop-0').value);
+
+                } catch { }
+
+                if (coquan.includes("Cơ quan công tác ngoài UEF") || coquan.includes(" --Chọn cơ quan công tác--")) {
+                    table.rows[0].cells[4].innerHTML = `0`;
+                    table.rows[0].cells[5].innerHTML = `0`;
+                    table.rows[0].cells[6].innerHTML = `0`;
+                    table.rows[0].cells[7].innerHTML = `0`;
+                } else {
+                    table.rows[0].cells[4].innerHTML = `0`;
+                    table.rows[0].cells[5].innerHTML = `0`;
+                    table.rows[0].cells[6].innerHTML = `${diem}`;
+                    table.rows[0].cells[7].innerHTML = `${tietchuan}`;
+                }
+            }
+        }
+    }
+
+    ////////alert("https://localhost:44364/api/NguoiDung/Get-user-id?input=" + _idUser);
+    function Get_DonVi() {
+      fetch(`https://localhost:44364/api/NguoiDung/Get-user-id?input=${_idUser}`, {
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(function (response) {
+            return response.json();
+        });
+    }
+    /////////
+    var tenuser = "";
+    var isViewOnly = false;
+    Get_DonVi();
+    ////alert(_idUser);
+    ////alert(sessionStorage.getItem("Khoa"));
+    ////////alert(sessionStorage.getItem('Khoa'));
+    var articleId = "";
+    function clear() {
+        articleId = "";
+        document.getElementById("iddmxd").value = "";
+        document.getElementById("dmsx_status").value = "";
+        
+        document.getElementById("tenSanPhamKHCN").value = "";
+        document.getElementById('moTaSanPhamKHCN').value = "";
+        
+        document.getElementById('tgThucHien').value = "5";
+        document.getElementById("san-pham-du-kien-section").style.display = "unset";
+        document.getElementById("chatLuong-form").style.display = "none";
+        document.getElementById('sanPhamDuKien').value = "";
+        document.getElementById('chatLuong-form').style.display = "unset";
+        document.getElementById('chatLuong').value = "Trống";
+        document.getElementById('kinhPhi').value = "0";
+        document.getElementById('kinhPhi').setAttribute('title', formatCurrency(0));
+        
+        document.getElementById("file-dang-ky-section").style.display = "unset";
+        document.getElementById('fileDangKy').value = "";
+        document.getElementById("fileDangKyBtn").style.display = "unset";
+        document.getElementById('fileDangKyDetail').innerHTML = "";
+        document.getElementById("file-thuyet-minh-section").style.display = "unset";
+        document.getElementById('fileThuyetMinh').value = "";
+        document.getElementById("fileThuyetMinhBtn").style.display = "unset";
+        document.getElementById('fileThuyetMinhDetail').innerHTML = "";
+        document.getElementById('fileDinhKemLyLich').value = "";
+        document.getElementById("fileDinhKemLyLichBtn").style.display = "unset";
+        document.getElementById('fileDinhKemLyLichDetail').innerHTML = "";
+        
+        document.getElementById("ketqua").style.display = "none";
+        document.getElementById("ketqua").innerHTML = "";
+        
+        document.getElementById("adminResponse").style.display = "none";
+        document.getElementById("ghiChu").value = "";
+        document.getElementById('attachContainer').style.display = 'none';
+        document.getElementById('adminFileListContainer').innerHTML = '';
+        
+        document.getElementById("btn-luu").style.display = "none";
+        
+        isViewOnly = false;
+        
+        stepperPrevious();
+    }
+    function clearHopDongModalContent() {
+        articleId = "";
+        document.getElementById("iddmxd").value = "";
+        
+        document.getElementById("tenSanPhamKHCN-hop-dong").value = "";
+        document.getElementById('moTaSanPhamKHCN-hop-dong').value = "";
+        
+        document.getElementById('tgThucHien-hop-dong').value = "5";
+        document.getElementById("san-pham-du-kien-section-hop-dong").style.display = "unset";
+        document.getElementById("chatLuong-form-hop-dong").style.display = "none";
+        document.getElementById('sanPhamDuKien-hop-dong').value = "";
+        document.getElementById('chatLuong-form-hop-dong').style.display = "unset";
+        document.getElementById('chatLuong-hop-dong').value = "Trống";
+        document.getElementById('kinhPhi-hop-dong').value = "0";
+        document.getElementById('kinhPhi-hop-dong').setAttribute('title', formatCurrency(0));
+        
+        document.getElementById('fileThuyetMinhHoanChinh').value = "";
+        document.getElementById("fileThuyetMinhHoanChinhBtn").style.display = "unset";
+        document.getElementById('fileThuyetMinhHoanChinhDetail').innerHTML = "";
+        document.getElementById('fileHopDong').value = "";
+        document.getElementById("fileHopDongBtn").style.display = "unset";
+        document.getElementById('fileHopDongDetail').innerHTML = "";
+        document.getElementById('fileQuyetDinhGiaoNhiemVu').value = "";
+        document.getElementById("fileQuyetDinhGiaoNhiemVuBtn").style.display = "unset";
+        document.getElementById('fileQuyetDinhGiaoNhiemVuDetail').innerHTML = "";
+        
+        document.getElementById("adminResponse-hop-dong").style.display = "none";
+        document.getElementById("ghiChu-hop-dong").value = "";
+        document.getElementById('attachContainer-hop-dong').style.display = 'none';
+        document.getElementById('adminFileListContainer-hop-dong').innerHTML = '';
+        
+        document.getElementById("btn-luu-hop-dong").style.display = "none";
+    }
+    function clearGiaHanNghiemThuModalContent() {
+        articleId = "";
+        document.getElementById("iddmxd").value = "";
+        
+        document.getElementById("tenSanPhamKHCN-gia-han-nghiem-thu").value = "";
+        document.getElementById('moTaSanPhamKHCN-gia-han-nghiem-thu').value = "";
+        
+        document.getElementById('tgThucHien-gia-han-nghiem-thu').value = "5";
+        document.getElementById("san-pham-du-kien-section-gia-han-nghiem-thu").style.display = "unset";
+        document.getElementById("chatLuong-form-gia-han-nghiem-thu").style.display = "none";
+        document.getElementById('sanPhamDuKien-gia-han-nghiem-thu').value = "";
+        document.getElementById('chatLuong-form-gia-han-nghiem-thu').style.display = "unset";
+        document.getElementById('chatLuong-gia-han-nghiem-thu').value = "Trống";
+        document.getElementById('kinhPhi-gia-han-nghiem-thu').value = "0";
+        document.getElementById('kinhPhi-gia-han-nghiem-thu').setAttribute('title', formatCurrency(0));
+        
+        document.getElementById('thaoTacNghiemThu').value = "";
+        handleThaoTacChange();
+
+        document.getElementById('fileDangKyNghiemThu').value = "";
+        document.getElementById("fileDangKyNghiemThuBtn").style.display = "unset";
+        document.getElementById('fileDangKyNghiemThuDetail').innerHTML = "";
+        document.getElementById("fileDangKyNghiemThu_hidden").value = "";
+
+        document.getElementById('fileMinhChungNghiemThu').value = "";
+        document.getElementById("fileMinhChungNghiemThuBtn").style.display = "unset";
+        document.getElementById('fileMinhChungNghiemThuDetail').innerHTML = "";
+        document.getElementById("fileMinhChungNghiemThu_hidden").value = "";
+
+        document.getElementById('fileXinHuyDeTai').value = "";
+        document.getElementById("fileXinHuyDeTaiBtn").style.display = "unset";
+        document.getElementById('fileXinHuyDeTaiDetail').innerHTML = "";
+        document.getElementById("fileXinHuyDeTai_hidden").value = "";
+
+        document.getElementById('fileThanhLyHuyHD').value = "";
+        document.getElementById("fileThanhLyHuyHDBtn").style.display = "unset";
+        document.getElementById('fileThanhLyHuyHDDetail').innerHTML = "";
+        document.getElementById("fileThanhLyHuyHD_hidden").value = "";
+
+        document.getElementById('fileGiaHanThucHienDeTai').value = "";
+        document.getElementById("fileGiaHanThucHienDeTaiBtn").style.display = "unset";
+        document.getElementById('fileGiaHanThucHienDeTaiDetail').innerHTML = "";
+        document.getElementById("fileGiaHanThucHienDeTai_hidden").value = "";
+        
+        document.getElementById("adminResponse-gia-han-nghiem-thu").style.display = "none";
+        document.getElementById("ghiChu-gia-han-nghiem-thu").value = "";
+        document.getElementById('attachContainer-gia-han-nghiem-thu').style.display = 'none';
+        document.getElementById('adminFileListContainer-gia-han-nghiem-thu').innerHTML = '';
+        
+        document.getElementById("btn-luu-gia-han-nghiem-thu").style.display = "none";
+    }
+    function clearThanhLyHopDongModalContent() {
+        articleId = "";
+        document.getElementById("iddmxd").value = "";
+        
+        document.getElementById("tenSanPhamKHCN-thanh-ly").value = "";
+        document.getElementById('moTaSanPhamKHCN-thanh-ly').value = "";
+        
+        document.getElementById('tgThucHien-thanh-ly').value = "5";
+        document.getElementById("san-pham-du-kien-section-thanh-ly").style.display = "unset";
+        document.getElementById("chatLuong-form-thanh-ly").style.display = "none";
+        document.getElementById('sanPhamDuKien-thanh-ly').value = "";
+        document.getElementById('chatLuong-form-thanh-ly').style.display = "unset";
+        document.getElementById('chatLuong-thanh-ly').value = "Trống";
+        document.getElementById('kinhPhi-thanh-ly').value = "0";
+        document.getElementById('kinhPhi-thanh-ly').setAttribute('title', formatCurrency(0));
+        
+        document.getElementById('fileDangKyNghiemThu').value = "";
+        document.getElementById("fileDangKyNghiemThuBtn").style.display = "unset";
+        document.getElementById('fileDangKyNghiemThuDetail').innerHTML = "";
+        document.getElementById('fileMinhChungNghiemThu').value = "";
+        document.getElementById("fileMinhChungNghiemThuBtn").style.display = "unset";
+        document.getElementById('fileMinhChungNghiemThuDetail').innerHTML = "";
+        document.getElementById('fileGiaHanThucHienDeTai').value = "";
+        document.getElementById("fileGiaHanThucHienDeTaiBtn").style.display = "unset";
+        document.getElementById('fileGiaHanThucHienDeTaiDetail').innerHTML = "";
+        
+        document.getElementById("adminResponse-thanh-ly").style.display = "none";
+        document.getElementById("ghiChu-thanh-ly").value = "";
+        document.getElementById('attachContainer-thanh-ly').style.display = 'none';
+        document.getElementById('adminFileListContainer-thanh-ly').innerHTML = '';
+        
+        document.getElementById("btn-luu-thanh-ly").style.display = "none";
+    }
+    function check_result() {
+        var isAllowEdit = document.getElementById('dmsx_status').value == "Nộp lại/Chỉnh sửa" || document.getElementById('dmsx_status').value == ""
+        
+        var tenspkhcn = document.querySelector('#tenSanPhamKHCN').value;
+        var tgThucHien = document.getElementById('tgThucHien').value;
+        var fileDangKy = document.getElementById('fileDangKy_hidden').value;
+        var fileThuyetMinh = document.getElementById('fileThuyetMinh_hidden').value;
+        var fileDinhKemLyLich = document.getElementById('fileDinhKemLyLich_hidden').value;
+        var kinhPhi = document.getElementById('kinhPhi').value;
+        
+        if (document.getElementById("iddmxd").value == "") {
+            document.getElementById("information-part").innerHTML = `<div class="row">
+                        <div class="form-group col-6 row">
+                            <label class="col-form-label" for="sltgc">Chủ nhiệm</label>
+                            <input class="form-control col" style="margin-left:6%" type="number" placeholder="Số lượng chủ nhiệm" id="sltgc" disabled value="1" min="1" max="1" oninput="clear_hinhthuc()" />
+                        </div>
+                        <div class="form-group col row" style="margin-left:2%">
+                            <label class="col-form-label" for="sltgp">Thành viên</label>
+                            <input class="form-control col" style="margin-left:6%" type="number" placeholder="Số lượng thành viên" id="sltgp" min="0" value="0" oninput="clear_hinhthuc()" />
+                        </div>
+                    </div>
+            
+                    <div class="form-group col-2" id="tongtacgia">
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">THÔNG TIN TÁC GIẢ</h3>
+                        </div>
+                        @*Ban dt*@
+                        <div class="table-container">
+            
+                            <table class="table table-bordered table-striped" style="width:100%" id="tbtacgiasl">
+                                <tbody id="addtacgiasl2" onchange="loadtable()">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-container">
+                            <table class="table table-bordered table-striped" style="width:100%" id="tbtacgia2">
+                                <tbody id="addtacgia" onchange="loadtable()">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+            
+                    <button class="btn btn-success" onclick="stepperPrevious()">VỀ TRƯỚC</button>`;
+
+            // tự động hiển thị các trường nhập liệu sẵn
+            clear_hinhthuc();
+            themtacgia();
+        }
+        
+        if (tenspkhcn == "") {
+            return toastr.warning("Vui lòng nhập tên đề tài!");
+        }
+        if (tgThucHien < 5 && tgThucHien > 12) {
+            return toastr.warning("Vui lòng chọn thời gian thực hiện hợp lệ (từ 5 đến 12 tháng)!");
+        }
+        if (kinhPhi == 0) {
+            return toastr.warning("Vui lòng sản phẩm/chất lượng!");
+        }
+        if (fileDangKy == "") {
+           return toastr.warning("Vui lòng tải lên phiếu đăng ký đề tài!");
+        }
+        if (fileThuyetMinh == "") {
+           return toastr.warning("Vui lòng tải lên phiếu thuyết minh đề tài!");
+        }
+        if (fileDinhKemLyLich == "") {
+           return toastr.warning("Vui lòng thêm đính kèm lý lịch!");
+        }
+
+        stepper.next()
+
+        if (!isViewOnly && isAllowEdit) {
+            document.getElementById("btn-luu").style.display = "unset";
+        }
+    }
+  function stepperPrevious() {
+      stepper.previous();
+
+      document.getElementById("btn-luu").style.display = "none";
+  }
+    
+    async function checkKeKhai() {
+        const wrapper = document.getElementById("btnKeKhai");
+        
+        try {
+            const response = await fetch('https://localhost:44364/api/CaiDatHeThong/Get-CaiDatKeKhai?key=keKhaiDeTaiSinhVien',
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + _token
+                    }
+                });
+    
+            const data = await response.json();
+            const isAllow = data?.value === true;
+    
+            wrapper.innerHTML = isAllow
+                ? `<button class="btn btn-success" id="create" data-toggle="modal" data-target="#modal-xl-create" data-backdrop="static">THÊM MỚI</button>`
+                : `<button class="btn btn-secondary" id="create-inactive" disabled>ĐÃ KHÓA</button>`;
+        } catch {
+            wrapper.innerHTML = `<button class="btn btn-secondary" id="create-inactive" disabled>ĐÃ KHÓA</button>`;
+        }
+    }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    checkKeKhai();
+    // BS-Stepper Init
+    window.stepper = new Stepper(document.querySelector('.bs-stepper'))
+    
+    // Sự kiện khi modal mở
+    $('#modal-xl-create').on('shown.bs.modal', function () { });
+    $('#modal-xl-hop-dong').on('shown.bs.modal', function () { });
+    $('#modal-xl-gia-han-nghiem-thu').on('shown.bs.modal', function () { });
+    
+    // Sự kiện khi modal đóng
+    $('#modal-xl-create').on('hidden.bs.modal', function () {
+      clear();
+    });
+    $('#modal-xl-hop-dong').on('hidden.bs.modal', function () {
+      clearHopHongModalContent();
+    });
+    $('#modal-xl-gia-han-nghiem-thu').on('hidden.bs.modal', function () {
+      clearGiaHanNghiemThuModalContent();
+    });
+  });
+
+    //kê khai khối lượng gv
+    var apiQDGV = "https://localhost:44364/api/QuyDoiGV/Get-spkhcn?spkhcn=";
+    //
+    linkapiID2 = "https://localhost:44364/api/QuyDoiGV/Get-id?id=";
+    linkapiID3NCV = "https://localhost:44364/api/ThanhToanNCV/Get-id?id=";
+
+  // Hàm rút gọn tên file
+  function shortenFileName(fileName, maxLength = 30) {
+    // Kiểm tra độ dài fileName, nếu nhỏ hơn hoặc bằng maxLength thì không cần rút gọn
+    if (fileName.length <= maxLength) return fileName;
+
+    const extIndex = fileName.lastIndexOf('.'); // Lấy vị trí dấu chấm cuối cùng (phần mở rộng file)
+    const extension = extIndex !== -1 ? fileName.slice(extIndex) : ''; // Phần mở rộng file (nếu có)
+    const baseName = fileName.slice(0, extIndex); // Phần tên trước dấu chấm
+
+    // Giữ lại 7 ký tự đầu và 4 ký tự cuối, giữa là '...'
+    const start = baseName.slice(0, 13);
+    const end = baseName.slice(-7);
+
+    return `${start}...${end}${extension}`;
+  }
+
+  // Hàm xử lý khi chọn file
+  function handleSelectFile(documentId, docPreviewId) {
+    uploadFiles(documentId, docPreviewId);
+  }
+  
+  function sanitizeFileName(str) {
+    return str.replace(/[\\/:*"<>|]/g, ' ').trim();
+  }
+  
+  function formatDatetimeNow() {
+      const date = new Date();
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      const seconds = date.getSeconds();
+    
+      // 15062025153928
+      return `${day.toString().padStart(2, "0")}${month
+        .toString()
+        .padStart(2, "0")}${year.toString().padStart(4, "0")}${hours
+        .toString()
+        .padStart(2, "0")}${minutes.toString().padStart(2, "0")}${seconds
+        .toString()
+        .padStart(2, "0")}`;
+    };
+
+  // Hàm upload file
+  function uploadFiles(documentId, docPreviewId) {
+      var fileInput = document.getElementById(documentId);
+      var file = fileInput.files[0];
+      const userId = _idUser;
+      const valuetenbaibao = formatDatetimeNow(); // tối ưu đường dẫn cho gọn hơn
+  
+      const maxFileSize = 10 * 1024 * 1024; // Giới hạn dung lượng là 10MB
+  
+      if (file.length === 0) {
+        toastr.warning('Vui lòng chọn tệp tin để tải lên.');
+        return;
+      }
+  
+      // Kiểm tra dung lượng file
+      if (file.size > maxFileSize) {
+        toastr.error(`Tệp tin ${file.name} vượt quá giới hạn dung lượng 10MB.`);
+        return;
+      }
+      
+      // Tạo FormData để upload file dạng binary
+      let formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', file.name);
+      formData.append('userId', userId);
+      formData.append('valuetenbaibao', sanitizeFileName(valuetenbaibao));
+      
+      $.ajax({
+        url: '/Article/SaveFile',
+        type: 'POST',
+        data: formData,
+        processData: false, // Không xử lý dữ liệu
+        contentType: false, // Không thiết lập tiêu đề content-type
+        success: function (result) {
+          if (result.success) {
+            toastr.success('Tải lên thành công.');
+            document.getElementById(`${documentId}_hidden`).value = result.filePath;
+            displayFileUploaded(result.filePath, docPreviewId);
+          } else {
+            toastr.error(result.message);
+          }
+        },
+        error: function () {
+          toastr.error('Đã xảy ra lỗi khi tải lên.');
+        }
+      });
+    }
+
+  // Hàm load hiển thị danh sách file đã upload dùng xem chi tiết
+  function loadFileUploaded(fileUrl, documentId, className = 'col-12 file-item', clearContentBefore = true, isAdminFile = false) {
+    const uploadedFilesContainer = document.getElementById(documentId);
+    if (clearContentBefore) {
+      uploadedFilesContainer.innerHTML = ''; // Xóa nội dung cũ
+    }
+
+    const fileDiv = document.createElement('div');
+    fileDiv.className = className;
+
+    const fileLink = document.createElement('a');
+    fileLink.href = fileUrl;
+    const fileName = fileUrl.split('/').pop();
+    fileLink.innerHTML = `${getFileIcon(fileName)} ${shortenFileName(fileName)}`; // Hiển thị tên file đã rút gọn kèm icon file
+    fileLink.target = '_blank';
+    fileLink.className = 'd-block';
+
+    fileDiv.appendChild(fileLink);
+    
+    if (!isAdminFile) {
+      const fileStatusSpan = document.createElement('span');
+      fileStatusSpan.id = `${documentId}Status`;
+      fileDiv.appendChild(fileStatusSpan);
+    }
+    
+    uploadedFilesContainer.appendChild(fileDiv);
+  }
+
+  // Hàm hiển thị danh sách file đã upload
+  function displayFileUploaded(fileUrl, documentId) {
+    const uploadedFilesContainer = document.getElementById(documentId);
+    uploadedFilesContainer.innerHTML = ''; // Xóa nội dung cũ
+
+    const fileDiv = document.createElement('div');
+    fileDiv.className = 'col-12 file-item';
+
+    const fileLink = document.createElement('a');
+    fileLink.href = fileUrl;
+    const fileName = fileUrl.split('/').pop();
+    fileLink.innerHTML = `${getFileIcon(fileName)} ${shortenFileName(fileName)}`; // Hiển thị tên file đã rút gọn kèm icon file
+    fileLink.target = '_blank';
+    fileLink.className = 'd-block';
+
+    const removeButton = document.createElement('button');
+    removeButton.textContent = 'Xóa';
+    removeButton.className = 'btn btn-danger btn-sm';
+    removeButton.style.position = 'absolute';
+    removeButton.style.top = '5px';
+    removeButton.style.right = '5px';
+    removeButton.onclick = function () {
+      deleteUploadedFile(fileUrl, fileDiv);
+    };
+
+    fileDiv.appendChild(fileLink);
+    fileDiv.appendChild(removeButton);
+    uploadedFilesContainer.appendChild(fileDiv);
+  }
+  
+  function getFileIcon(fileName) {
+    const ext = fileName.split('.').pop();
+    if (ext == 'png' || ext == 'jpg' || ext == 'jpeg') {
+      return '<i class="bi bi-file-earmark-image"></i>';
+    } else if (ext == 'pdf') {
+      return '<i class="bi bi-file-earmark-pdf"></i>';
+    } else if (ext == 'ppt' || ext == 'pptx') {
+      return '<i class="bi bi-file-earmark-slides"></i>';
+    } else if (ext == 'xls' || ext == 'xlsx' || ext == 'csv') {
+      return '<i class="bi bi-file-earmark-spreadsheet"></i>';
+    } else if (ext == 'doc' || ext == 'docx') {
+      return '<i class="bi bi-file-earmark-word"></i>';
+    } else if (ext == 'zip' || ext == 'rar' || ext == 'tar' || ext == 'gz' || ext == '7z') {
+      return '<i class="bi bi-file-earmark-zip"></i>';
+    } else {
+      return '<i class="bi bi-file-earmark-text"></i>';
+    }
+  }
+
+  // Hàm xóa file đã upload
+  function deleteUploadedFile(fileUrl, fileDiv) {
+    if (confirm("Bạn có chắc chắn muốn xóa tệp này không?")) {
+      $.ajax({
+        url: '/Article/DeleteFile',
+        type: 'POST',
+        data: JSON.stringify({ fileUrl: fileUrl }),
+        contentType: 'application/json',
+        success: function (result) {
+          if (result.success) {
+            toastr.success('Xóa tệp thành công.');
+            // Xóa phần tử của file đã xóa khỏi giao diện
+            fileDiv.remove();
+          } else {
+            toastr.error('Xóa tệp thất bại.');
+          }
+        },
+        error: function () {
+          toastr.error('Đã xảy ra lỗi khi xóa tệp.');
+        }
+      });
+    }
+  }
+
+    document.addEventListener("DOMContentLoaded", async function () {
+
+
+        if (_ngach.includes("GV")) {
+            //document.getElementById("create").disabled = true;
+        } else {
+            //document.getElementById("create").disabled = false;
+        }
+        ////////
+        var timeline = document.getElementById("timeline");
+        timeline.addEventListener("change", async function () {
+            ////alert("a");
+            $(function () {
+                $('#example1').DataTable().clear().destroy();
+
+            });
+            await getData();
+
+        });
+        await getData();
+    });
+
+
+    var global_dmxd = "";
+    function xemchitiet(iddm) {
+        fetch('https://localhost:44364/api/DanhMucXetDuyetSinhVien/Get-id?IDDanhMuc=' + iddm, {
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json())
+            .then(data => {
+                global_dmxd = data.type;
+                articleId = data.idDanhMuc;
+                ////alert(data.status);
+                if (data.status == "Đã nộp hồ sơ") {
+                    document.getElementById("btn-luu").disabled = false;
+                } else if (data.status == "Không tài trợ") {
+                    document.getElementById("btn-luu").disabled = false;
+                } else {
+                    // nên ẩn đi, không xóa 2 nút này
+                    document.getElementById("btn-luu").style.display = "none";
+                }
+                
+                sessionStorage.setItem("NguoiKhai", data.userId);
+                sessionStorage.setItem("GhiChu", data.ghiChu);
+
+                document.getElementById("iddmxd").value = data.idDanhMuc;
+                document.getElementById("dmsx_status").value = data.status;
+                document.getElementById("tenSanPhamKHCN").value = data.tenBaiBao;
+                document.getElementById("moTaSanPhamKHCN").value = data.moTaBaiBao;
+                document.getElementById("tgThucHien").value = data.thoiGianThucHien;
+                
+                document.getElementById("sanPhamDuKien").value = data.category.toString().split('|~|')[0];
+                loadSPDuKien();
+ 
+                document.getElementById("chatLuong").value = data.category.toString().split('|~|')[1];
+                document.getElementById("kinhPhi").value = data.kinhPhi;
+                document.getElementById('kinhPhi').setAttribute('title', formatCurrency(data.kinhPhi));
+
+                document.getElementById("fileDangKyBtn").style.display = "none";
+                loadFileUploaded(data.fileDangKy, 'fileDangKyDetail');
+                document.getElementById("fileDangKy_hidden").value = data.fileDangKy;
+                document.getElementById("fileThuyetMinhBtn").style.display = "none";
+                loadFileUploaded(data.fileThuyetMinh, 'fileThuyetMinhDetail');
+                document.getElementById("fileThuyetMinh_hidden").value = data.fileThuyetMinh;
+                document.getElementById("fileDinhKemLyLichBtn").style.display = "none";
+                loadFileUploaded(data.fileDinhKemLyLich, 'fileDinhKemLyLichDetail');
+                document.getElementById("fileDinhKemLyLich_hidden").value = data.fileDinhKemLyLich;
+                
+                checkApprovedFile(data.fileStatus);
+                
+                if (data.ghiChu || data.fileList) {
+                    document.getElementById("adminResponse").style.display = "unset";
+                    document.getElementById("ghiChu").value = data.ghiChu;
+                    
+                    if (data.fileList.length > 0) {
+                        document.getElementById('attachContainer').style.display = 'unset'
+                        document.getElementById('adminFileListContainer').innerHTML = ''
+                        data.fileList.forEach((fileUrl) => {
+                            loadFileUploaded(fileUrl, 'adminFileListContainer', 'col-3 file-item', false, true);
+                        });
+                    }
+                }
+
+                var tgp = 0;
+                var tgc = 1;
+                const kekhaitg = render_tg(data.groupUser);
+                kekhaitg.forEach(function (row) {
+                    if (row[3].includes("Thành viên") || row[3].includes("Chủ nhiệm")) {
+                        tgp += 1;
+                    }
+                });
+
+                document.querySelector('#sltgp').value = tgp - tgc;
+                ///////
+                var a = ``;
+                var sltgc = tgc;
+                let i = 0;
+
+                document.querySelector('#tbtacgia2').innerHTML = `<thead style="background-color: #17a2b8;color: white;">
+                        <th width="2%">STT</th>
+                        <th width="15%">Mã nhân viên</th>
+                        <th width="15%">Cơ quan công tác</th>
+                        <th width="15%">Loại tác giả</th>
+                        </thead>
+                        <tbody id="tablethanhtoan">
+                        </tbody>`;
+
+                kekhaitg.forEach(async function (row) {
+                    var vop2 = ``;
+                    if (row[2] == " --Chọn cơ quan công tác--") {
+                        vop = `<div class="form-group">
+                         <select name="coquancongtac" onchange="checknulluef(${i})" value="${row[1]}" id="coquancongtac-${i}" class="form-control">
+                            <option value="0" selected> --Chọn cơ quan công tác--</option>
+                            <option value="1" >Cơ quan công tác trong UEF</option>
+                            <option value="0">Cơ quan công tác ngoài UEF</option>
+                        </select>
+                    </div>`;
+                    }
+                    if (row[2] == "Cơ quan công tác trong UEF") {
+                        vop = `<div class="form-group">
+                         <select name="coquancongtac" onchange="checknulluef(${i})" value="${row[1]}" id="coquancongtac-${i}" class="form-control">
+                            <option value="0"> --Chọn cơ quan công tác--</option>
+                            <option value="1" selected>Cơ quan công tác trong UEF</option>
+                            <option value="0">Cơ quan công tác ngoài UEF</option>
+                        </select>
+                    </div>`;
+                    }
+                    if (row[2] == "Cơ quan công tác ngoài UEF") {
+                        vop = `<div class="form-group">
+                         <select name="coquancongtac" onchange="checknulluef(${i})" id="coquancongtac-${i}" class="form-control">
+                            <option value="0"> --Chọn cơ quan công tác--</option>
+                            <option value="1" >Cơ quan công tác trong UEF</option>
+                            <option value="0" selected>Cơ quan công tác ngoài UEF</option>
+                        </select>
+                    </div>`;
+                    }
+                    if (row[3].includes("Thành viên")) {
+                        vop2 = `<option>Thành viên</option>`;
+                    }
+                    if (row[3].includes("Chủ nhiệm")) {
+                        vop2 = `<option>Chủ nhiệm</option>`;
+                    }
+
+                    //document.querySelector('#tongtacgia').innerHTML = `<a>Tổng số tác giả: <a id="tongsltg">${sltg}</a></a>`;
+                    if (sltgc == 1) {
+                        a += `<tr><td>${i += 1}</td >
+                        <td ><input class="form-control" type="text" value="${row[1]}" placeholder="Nhập Mã GV/Tên thành viên thuộc UEF" id="inp-username-id-mail-${i - 1}"   oninput="inpsearch(${i - 1},render_user)" />
+                        <div id="themtg" style="display: flex">
+                            <div width: 50%">
+                                <dl id="dl-user-${i - 1}">
+                                </dl>
+                            </div>
+                        </div></td>
+                        <td >${vop}</td>
+                        <td>
+                        <div class="form-group">
+                         <select name="coquancongtac-${i - 1}" onchange="checknulluef(${i + 1})" id="tg-${i - 1}" class="form-control" disabled>
+
+                            <option>${row[3]}</option>
+
+                             </select></td>
+
+                             </tr>`;
+                        document.querySelector('#addtacgia').innerHTML = ``;
+                        try { document.querySelector('#addtacgia').innerHTML = a; } catch { }
+
+                    }
+
+                    else if (sltgc > 1) {
+                        toastr.warning("Duy nhất 1 chủ nhiệm!");
+                    }
+                    try { document.querySelector('#addtacgia').innerHTML = a; } catch { }
+
+                    /////
+                    // await Get_issn(renderGet_issn);
+                    //document.querySelector('#tbtacgiasl').EditData = false;
+                });//
+                loadtable(); // temp to calc author, DO NOT REMOVE
+
+            });
+    }
+    
+    function chixemchitiet(iddm) {
+        isViewOnly = true;
+
+        fetch('https://localhost:44364/api/DanhMucXetDuyetSinhVien/Get-id?IDDanhMuc=' + iddm, {
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json())
+            .then(data => {
+                global_dmxd = data.type;
+                articleId = data.idDanhMuc;
+                ////alert(data.status);
+                if (data.status == "Đã nộp hồ sơ") {
+                    document.getElementById("btn-luu").disabled = false;
+                } else if (data.status == "Không tài trợ") {
+                    document.getElementById("btn-luu").disabled = false;
+                } else {
+                    // nên ẩn đi, không xóa 2 nút này
+                    document.getElementById("btn-luu").style.display = "none";
+                }
+                
+                sessionStorage.setItem("NguoiKhai", data.userId);
+                sessionStorage.setItem("GhiChu", data.ghiChu);
+
+                document.getElementById("iddmxd").value = data.idDanhMuc;
+                document.getElementById("tenSanPhamKHCN").value = data.tenBaiBao;
+                document.getElementById("moTaSanPhamKHCN").value = data.moTaBaiBao;
+                document.getElementById("tgThucHien").value = data.thoiGianThucHien;
+
+                document.getElementById("sanPhamDuKien").value = data.category.toString().split('|~|')[0];
+                loadSPDuKien();
+
+                document.getElementById("chatLuong").value = data.category.toString().split('|~|')[1];
+                document.getElementById("kinhPhi").value = data.kinhPhi;
+                document.getElementById('kinhPhi').setAttribute('title', formatCurrency(data.kinhPhi));
+                
+                document.getElementById("san-pham-du-kien-section").style.display = "none";
+                document.getElementById("chatLuong-form").style.display = "none";
+
+                document.getElementById("file-dang-ky-section").style.display = "none";
+                document.getElementById("fileDangKy_hidden").value = data.fileDangKy;
+                document.getElementById("file-thuyet-minh-section").style.display = "none";
+                document.getElementById("fileThuyetMinh_hidden").value = data.fileThuyetMinh;
+                document.getElementById("fileDinhKemLyLichBtn").style.display = "none";
+                loadFileUploaded(data.fileDinhKemLyLich, 'fileDinhKemLyLichDetail');
+                document.getElementById("fileDinhKemLyLich_hidden").value = data.fileDinhKemLyLich;
+                
+                checkApprovedFile(data.fileStatus);
+                
+                if (data.status != "Đã nộp hồ sơ") {
+                    document.getElementById("adminResponse").style.display = "unset";
+                    document.getElementById("ghiChu").value = data.ghiChu;
+                    
+                    if (data.fileList && data.fileList.length > 0) {
+                        document.getElementById('attachContainer').style.display = 'unset'
+                        document.getElementById('adminFileListContainer').innerHTML = ''
+                        data.fileList.forEach((fileUrl) => {
+                            loadFileUploaded(fileUrl, 'adminFileListContainer', 'col-3 file-item', false, true);
+                        });
+                    }
+                }
+                
+
+                var tgp = 0;
+                var tgc = 1;
+                const kekhaitg = render_tg(data.groupUser);
+                kekhaitg.forEach(function (row) {
+                    if (row[3].includes("Thành viên") || row[3].includes("Chủ nhiệm")) {
+                        tgp += 1;
+                    }
+                });
+
+                document.getElementById("sltgp").setAttribute("disabled", "1");
+                document.querySelector('#sltgp').value = tgp - tgc;
+                ///////
+                var a = ``;
+                var sltgc = tgc;
+                let i = 0;
+
+                document.querySelector('#tbtacgia2').innerHTML = `<thead style="background-color: #17a2b8;color: white;">
+                        <th width="2%">STT</th>
+                        <th width="15%">Mã nhân viên</th>
+                        <th width="15%">Cơ quan công tác</th>
+                        <th width="15%">Loại tác giả</th>
+                        </thead>
+                        <tbody id="tablethanhtoan">
+                        </tbody>`;
+
+                kekhaitg.forEach(async function (row) {
+                    var vop2 = ``;
+                    if (row[2] == " --Chọn cơ quan công tác--") {
+                        vop = `<div class="form-group">
+                         <select name="coquancongtac" value="${row[1]}" id="coquancongtac-${i}" class="form-control" disabled>
+                            <option value="0" selected> --Chọn cơ quan công tác--</option>
+                        </select>
+                    </div>`;
+                    }
+                    if (row[2] == "Cơ quan công tác trong UEF") {
+                        vop = `<div class="form-group">
+                         <select name="coquancongtac" value="${row[1]}" id="coquancongtac-${i}" class="form-control" disabled>
+                            <option value="1" selected>Cơ quan công tác trong UEF</option>
+                         </select>
+                    </div>`;
+                    }
+                    if (row[2] == "Cơ quan công tác ngoài UEF") {
+                        vop = `<div class="form-group">
+                         <select name="coquancongtac" id="coquancongtac-${i}" class="form-control" disabled>
+                            <option value="0" selected>Cơ quan công tác ngoài UEF</option>
+                         </select>
+                    </div>`;
+                    }
+                    if (row[3].includes("Thành viên")) {
+                        vop2 = `<option>Thành viên</option>`;
+                    }
+                    if (row[3].includes("Chủ nhiệm")) {
+                        vop2 = `<option>Chủ nhiệm</option>`;
+                    }
+
+                    //document.querySelector('#tongtacgia').innerHTML = `<a>Tổng số tác giả: <a id="tongsltg">${sltg}</a></a>`;
+                    if (sltgc == 1) {
+                        a += `<tr><td>${i += 1}</td >
+                        <td ><input class="form-control" type="text" value="${row[1]}" placeholder="Nhập Mã GV/Tên thành viên thuộc UEF" id="inp-username-id-mail-${i - 1}" disabled />
+                        <div id="themtg" style="display: flex">
+                            <div width: 50%">
+                                <dl id="dl-user-${i - 1}">
+                                </dl>
+                            </div>
+                        </div></td>
+                        <td >${vop}</td>
+                        <td>
+                        <div class="form-group">
+                         <select name="coquancongtac-${i - 1}" onchange="checknulluef(${i + 1})" id="tg-${i - 1}" class="form-control" disabled>
+
+                            <option>${row[3]}</option>
+
+                             </select></td>
+
+                             </tr>`;
+                        document.querySelector('#addtacgia').innerHTML = ``;
+                        try { document.querySelector('#addtacgia').innerHTML = a; } catch { }
+
+                    }
+
+                    else if (sltgc > 1) {
+                        toastr.warning("Duy nhất 1 chủ nhiệm!");
+                    }
+                    try { document.querySelector('#addtacgia').innerHTML = a; } catch { }
+
+                    /////
+                    // await Get_issn(renderGet_issn);
+                    //document.querySelector('#tbtacgiasl').EditData = false;
+                });//
+                loadtable(); // temp to calc author, DO NOT REMOVE
+
+            });
+    }
+    
+    function xemHopDong(iddm) {
+        fetch('https://localhost:44364/api/DanhMucXetDuyetSinhVien/Get-id?IDDanhMuc=' + iddm, {
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json())
+            .then(data => {
+                global_dmxd = data.type;
+                articleId = data.idDanhMuc;
+                ////alert(data.status);
+                if (data.status_hopDong == "Chủ nhiệm kiểm tra, nộp lại hồ sơ và hợp đồng" || data.status_hopDong == null || data.status_hopDong == "") {
+                    document.getElementById("btn-luu-hop-dong").style.display = "unset";
+                } else {
+                    document.getElementById("btn-luu-hop-dong").style.display = "none";
+                }
+
+                document.getElementById("fileStatus-hop-dong").value = data.fileStatus;
+                document.getElementById("iddmxd").value = data.idDanhMuc;
+                document.getElementById("tenSanPhamKHCN-hop-dong").value = data.tenBaiBao;
+                document.getElementById("moTaSanPhamKHCN-hop-dong").value = data.moTaBaiBao;
+                document.getElementById("tgThucHien-hop-dong").value = data.thoiGianThucHien;
+
+                document.getElementById("sanPhamDuKien-hop-dong").value = data.category.toString().split('|~|')[0];
+                loadSPDuKien();
+
+                document.getElementById("chatLuong-hop-dong").value = data.category.toString().split('|~|')[1];
+                document.getElementById("kinhPhi-hop-dong").value = data.kinhPhi;
+                document.getElementById('kinhPhi-hop-dong').setAttribute('title', formatCurrency(data.kinhPhi));
+                
+                if (data.fileThuyetMinhHoanChinh) {
+                    document.getElementById("fileThuyetMinhHoanChinh_hidden").value = data.fileThuyetMinhHoanChinh;
+                    loadFileUploaded(data.fileThuyetMinhHoanChinh, 'fileThuyetMinhHoanChinhDetail');
+                    checkApprovedFileIndex(data.fileStatus, "fileThuyetMinhHoanChinhDetailStatus", "fileThuyetMinhHoanChinhBtn", 3);
+                }
+                if (data.fileHopDong) {
+                    document.getElementById("fileHopDong_hidden").value = data.fileHopDong;
+                    loadFileUploaded(data.fileHopDong, 'fileHopDongDetail');
+                    checkApprovedFileIndex(data.fileStatus, "fileHopDongDetailStatus", "fileHopDongBtn", 4);
+                }
+                if (data.fileQuyetDinhGiaoNhiemVu) {
+                    document.getElementById("fileQuyetDinhGiaoNhiemVu_hidden").value = data.fileQuyetDinhGiaoNhiemVu;
+                    loadFileUploaded(data.fileQuyetDinhGiaoNhiemVu, 'fileQuyetDinhGiaoNhiemVuDetail');
+                    checkApprovedFileIndex(data.fileStatus, "fileQuyetDinhGiaoNhiemVuDetailStatus", "fileQuyetDinhGiaoNhiemVuBtn", 5);
+                }
+                
+                if (data.ghiChu) {
+                    document.getElementById("adminResponse-hop-dong").style.display = "unset";
+                    document.getElementById("ghiChu-hop-dong").value = data.ghiChu;
+                    
+                    if (data.fileList && data.fileList.length > 0) {
+                        document.getElementById('attachContainer-hop-dong').style.display = 'unset'
+                        document.getElementById('adminFileListContainer-hop-dong').innerHTML = ''
+                        data.fileList.forEach((fileUrl) => {
+                            loadFileUploaded(fileUrl, 'adminFileListContainer-hop-dong', 'col-3 file-item', false, true);
+                        });
+                    }
+                }
+            });
+    }
+    
+    function handleThaoTacChange() {
+        var selectedValue = document.getElementById('thaoTacNghiemThu').value;
+
+        document.getElementById('group-nghiem-thu').style.display = "none";
+        document.getElementById('group-huy-de-tai').style.display = "none";
+        document.getElementById('group-gia-han').style.display = "none";
+
+        if (selectedValue === "nghiemThu") {
+            document.getElementById('group-nghiem-thu').style.display = "flex";
+        } else if (selectedValue === "huyDeTai") {
+            document.getElementById('group-huy-de-tai').style.display = "flex";
+        } else if (selectedValue === "giaHan") {
+            document.getElementById('group-gia-han').style.display = "flex";
+        }
+    }
+
+    function xemThongTinGiaHanNghiemThu(iddm) {
+        fetch('https://localhost:44364/api/DanhMucXetDuyetSinhVien/Get-id?IDDanhMuc=' + iddm, {
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json())
+            .then(data => {
+                global_dmxd = data.type;
+                articleId = data.idDanhMuc;
+                ////alert(data.status);
+                if (data.status_nghiemThu == "Nộp lại/chỉnh sửa hồ sơ nghiệm thu, gia hạn, hủy" || data.status_nghiemThu == "Thông báo: Đến thời hạn nghiệm thu" || data.status_nghiemThu == null || data.status_nghiemThu == "") {
+                    document.getElementById("btn-luu-gia-han-nghiem-thu").style.display = "unset";
+                } else {
+                    document.getElementById("btn-luu-gia-han-nghiem-thu").style.display = "none";
+                }
+
+                document.getElementById("fileStatus-gia-han-nghiem-thu").value = data.fileStatus;
+                document.getElementById("iddmxd").value = data.idDanhMuc;
+                document.getElementById("tenSanPhamKHCN-gia-han-nghiem-thu").value = data.tenBaiBao;
+                document.getElementById("moTaSanPhamKHCN-gia-han-nghiem-thu").value = data.moTaBaiBao;
+                document.getElementById("tgThucHien-gia-han-nghiem-thu").value = data.thoiGianThucHien;
+
+                document.getElementById("sanPhamDuKien-gia-han-nghiem-thu").value = data.category.toString().split('|~|')[0];
+                loadSPDuKien();
+
+                document.getElementById("chatLuong-gia-han-nghiem-thu").value = data.category.toString().split('|~|')[1];
+                document.getElementById("kinhPhi-gia-han-nghiem-thu").value = data.kinhPhi;
+                document.getElementById('kinhPhi-gia-han-nghiem-thu').setAttribute('title', formatCurrency(data.kinhPhi));
+                
+                var files = {};
+                try {
+                    files = JSON.parse(data.fileThongTinNghiemThu || "{}");
+                } catch (e) {
+                    console.error("Error parsing fileThongTinNghiemThu:", e);
+                }
+
+                var selectElm = document.getElementById("thaoTacNghiemThu");
+                selectElm.value = "";
+                
+                if (files.fileDangKyNghiemThu || files.fileMinhChungNghiemThu) {
+                    selectElm.value = "nghiemThu";
+                } else if (files.fileXinHuyDeTai || files.fileThanhLyHuyHD) {
+                    selectElm.value = "huyDeTai";
+                } else if (files.fileGiaHanThucHienDeTai) {
+                    selectElm.value = "giaHan";
+                }
+
+                handleThaoTacChange();
+
+                if (files.fileDangKyNghiemThu) {
+                    var path = files.fileDangKyNghiemThu.path || files.fileDangKyNghiemThu;
+                    document.getElementById("fileDangKyNghiemThu_hidden").value = path;
+                    loadFileUploaded(path, 'fileDangKyNghiemThuDetail');
+                    checkApprovedFileIndex(data.fileStatus, "fileDangKyNghiemThuDetailStatus", "fileDangKyNghiemThuBtn", 6);
+                }
+                if (files.fileMinhChungNghiemThu) {
+                    var path = files.fileMinhChungNghiemThu.path || files.fileMinhChungNghiemThu;
+                    document.getElementById("fileMinhChungNghiemThu_hidden").value = path;
+                    loadFileUploaded(path, 'fileMinhChungNghiemThuDetail');
+                    checkApprovedFileIndex(data.fileStatus, "fileMinhChungNghiemThuDetailStatus", "fileMinhChungNghiemThuBtn", 7);
+                }
+                if (files.fileXinHuyDeTai) {
+                    var path = files.fileXinHuyDeTai.path || files.fileXinHuyDeTai;
+                    document.getElementById("fileXinHuyDeTai_hidden").value = path;
+                    loadFileUploaded(path, 'fileXinHuyDeTaiDetail');
+                }
+                if (files.fileThanhLyHuyHD) {
+                    var path = files.fileThanhLyHuyHD.path || files.fileThanhLyHuyHD;
+                    document.getElementById("fileThanhLyHuyHD_hidden").value = path;
+                    loadFileUploaded(path, 'fileThanhLyHuyHDDetail');
+                }
+                if (files.fileGiaHanThucHienDeTai) {
+                    var path = files.fileGiaHanThucHienDeTai.path || files.fileGiaHanThucHienDeTai;
+                    document.getElementById("fileGiaHanThucHienDeTai_hidden").value = path;
+                    loadFileUploaded(path, 'fileGiaHanThucHienDeTaiDetail');
+                    checkApprovedFileIndex(data.fileStatus, "fileGiaHanThucHienDeTaiDetailStatus", "fileGiaHanThucHienDeTaiBtn", 8);
+                }
+                
+                if (data.ghiChu) {
+                    document.getElementById("adminResponse-gia-han-nghiem-thu").style.display = "unset";
+                    document.getElementById("ghiChu-gia-han-nghiem-thu").value = data.ghiChu;
+                    
+                    if (data.fileList && data.fileList.length > 0) {
+                        document.getElementById('attachContainer-gia-han-nghiem-thu').style.display = 'unset'
+                        document.getElementById('adminFileListContainer-gia-han-nghiem-thu').innerHTML = ''
+                        data.fileList.forEach((fileUrl) => {
+                            loadFileUploaded(fileUrl, 'adminFileListContainer-gia-han-nghiem-thu', 'col-3 file-item', false, true);
+                        });
+                    }
+                }
+            });
+    }
+    
+    function xemThanhLyHopDong(iddm) {
+        fetch('https://localhost:44364/api/DanhMucXetDuyetSinhVien/Get-id?IDDanhMuc=' + iddm, {
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json())
+            .then(data => {
+                global_dmxd = data.type;
+                articleId = data.idDanhMuc;
+                ////alert(data.status);
+                if (data.status_nghiemThu == "Thanh lý hợp đồng (đề tài đã nghiệm thu ĐẠT)") {
+                    document.getElementById("btn-luu-thanh-ly").style.display = "unset";
+                } else {
+                    document.getElementById("btn-luu-thanh-ly").style.display = "none";
+                }
+
+                document.getElementById("fileStatus-thanh-ly").value = data.fileStatus;
+                document.getElementById("iddmxd").value = data.idDanhMuc;
+                document.getElementById("tenSanPhamKHCN-thanh-ly").value = data.tenBaiBao;
+                document.getElementById("moTaSanPhamKHCN-thanh-ly").value = data.moTaBaiBao;
+                document.getElementById("tgThucHien-thanh-ly").value = data.thoiGianThucHien;
+
+                document.getElementById("sanPhamDuKien-thanh-ly").value = data.category.toString().split('|~|')[0];
+                loadSPDuKien();
+
+                document.getElementById("chatLuong-thanh-ly").value = data.category.toString().split('|~|')[1];
+                document.getElementById("kinhPhi-thanh-ly").value = data.kinhPhi;
+                document.getElementById('kinhPhi-thanh-ly').setAttribute('title', formatCurrency(data.kinhPhi));
+                
+                if (data.ThanhLyHopDong) {
+                    document.getElementById("ThanhLyHopDong_hidden").value = data.ThanhLyHopDong;
+                    loadFileUploaded(data.ThanhLyHopDong, 'ThanhLyHopDongDetail');
+                    checkApprovedFileIndex(data.fileStatus, "ThanhLyHopDongDetailStatus", "ThanhLyHopDongBtn", 9);
+                }
+                if (data.fileBaiBaoHopHoiDong) {
+                    document.getElementById("fileBaiBaoHopHoiDong_hidden").value = data.fileBaiBaoHopHoiDong;
+                    loadFileUploaded(data.fileBaiBaoHopHoiDong, 'fileBaiBaoHopHoiDongDetail');
+                    checkApprovedFileIndex(data.fileStatus, "fileBaiBaoHopHoiDongDetailStatus", "fileBaiBaoHopHoiDongBtn", 10);
+                }
+                if (data.fileQuyetDinhCongNhanDeTai) {
+                    document.getElementById("fileQuyetDinhCongNhanDeTai_hidden").value = data.fileQuyetDinhCongNhanDeTai;
+                    loadFileUploaded(data.fileQuyetDinhCongNhanDeTai, 'fileQuyetDinhCongNhanDeTaiDetail');
+                    checkApprovedFileIndex(data.fileStatus, "fileQuyetDinhCongNhanDeTaiDetailStatus", "fileQuyetDinhCongNhanDeTaiBtn", 11);
+                }
+                
+                if (data.ghiChu) {
+                    document.getElementById("adminResponse-thanh-ly").style.display = "unset";
+                    document.getElementById("ghiChu-thanh-ly").value = data.ghiChu;
+                    
+                    if (data.fileList && data.fileList.length > 0) {
+                        document.getElementById('attachContainer-thanh-ly').style.display = 'unset'
+                        document.getElementById('adminFileListContainer-thanh-ly').innerHTML = ''
+                        data.fileList.forEach((fileUrl) => {
+                            loadFileUploaded(fileUrl, 'adminFileListContainer-thanh-ly', 'col-3 file-item', false, true);
+                        });
+                    }
+                }
+            });
+    }
+    
+    function checkApprovedFile(fileStatus) {
+      // ví dụ fileStatus = "01-"
+      const fs1 = fileStatus[0]; // 0
+      const fs2 = fileStatus[1]; // 1
+      const fs3 = fileStatus[2]; // -
+      
+      if (fs1 != "-") {
+        document.getElementById('fileDangKyDetailStatus').innerHTML = `
+          <i class="bi ${fs1 == "1" ? 'bi-check' : 'bi-x'}"></i> ${fs1 == "1" ? 'Đã duyệt' : 'Từ chối'}`;
+        document.getElementById('fileDangKyDetailStatus').style.color = fs1 == "1" ? "#4CAF50" : "#F44336";
+        if (fs1 == 0) {
+            document.getElementById('fileDangKyBtn').style.display = "unset";
+        }
+      }
+      if (fs2 != "-") {
+        document.getElementById('fileThuyetMinhDetailStatus').innerHTML = `
+          <i class="bi ${fs2 == "1" ? 'bi-check' : 'bi-x'}"></i> ${fs2 == "1" ? 'Đã duyệt' : 'Từ chối'}`;
+        document.getElementById('fileThuyetMinhDetailStatus').style.color = fs2 == "1" ? "#4CAF50" : "#F44336";
+        if (fs2 == 0) {
+            document.getElementById('fileThuyetMinhBtn').style.display = "unset";
+        }
+      }
+      if (fs3 != "-") {
+        document.getElementById('fileDinhKemLyLichDetailStatus').innerHTML = `
+          <i class="bi ${fs3 == "1" ? 'bi-check' : 'bi-x'}"></i> ${fs3 == "1" ? 'Đã duyệt' : 'Từ chối'}`;
+        document.getElementById('fileDinhKemLyLichDetailStatus').style.color = fs3 == "1" ? "#4CAF50" : "#F44336";
+        if (fs3 == 0) {
+            document.getElementById('fileDinhKemLyLichBtn').style.display = "unset";
+        }
+      }
+    }
+    
+    function checkApprovedFileIndex(fileStatus, statusElm, btnElm, index) {
+      // ví dụ fileStatus = "01-"
+      const fs = fileStatus[index];
+      
+      if (fs != "-") {
+        document.getElementById(statusElm).innerHTML = `
+          <i class="bi ${fs == "1" ? 'bi-check' : 'bi-x'}"></i> ${fs == "1" ? 'Đã duyệt' : 'Từ chối'}`;
+        document.getElementById(statusElm).style.color = fs == "1" ? "#4CAF50" : "#F44336";
+        if (fs == 0) {
+            document.getElementById(btnElm).style.display = "unset";
+        }
+      }
+    }
+
+
+
+    setInterval(function () { EditData(); }, 1000);
+    function EditData() {
+        if (global_dmxd != "") {
+
+            var radios2 = document.querySelectorAll('input[name="yc"]');
+            for (var i = 0; i < radios2.length; i++) {
+                if (radios2[i].value == global_dmxd) {
+
+                    radios2[i].click();
+                    global_dmxd = "";
+                    break;
+                }
+            }
+        }
+    }
+
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds) {
+                break;
+            }
+        }
+    }
+    function changeStatus() {
+        var idDanhMuc = document.getElementById("idDanhMuc").value;
+        var status = document.getElementById("status").value;
+        fetch(`https://localhost:44364/api/DanhMucXetDuyetSinhVien/${idDanhMuc}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(status)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    toastr.success('Cập nhật trạng thái thành công!');
+                }
+            })
+            .catch(error => {
+                toastr.warning('Có lỗi xảy ra', error);
+            });
+    }
+
+    function render_kekhaitg(tg) {
+        const tgct = tg.split(";");
+        return tgct;
+    }
+    function render_tg(str) {
+        const lista = [];
+        const tgs = str.split("$");
+        tgs.forEach(function (tg) {
+            var x = render_kekhaitg(tg);
+            lista.push(x);
+        });
+        return lista;
+    }
+
+    function getOneAuthor(str, userId) {
+        const tgs = str.split("$");
+        var result = null;
+        tgs.forEach(function (tg) {
+            if (tg.includes(userId)) {
+                result = render_kekhaitg(tg);
+            }
+        });
+        return result;
+    }
+    //Xuất file excel
+    function ExportToExcelDeTaiUser(xuat) {
+        var timeline = document.getElementById("timeline").value;
+        if (!timeline) {
+            timeline = "2020-01-01 00:00:00.0000000";
+        }
+        var url = 'https://localhost:44364/api/DanhMucXetDuyetSinhVien/ExcelUserid?userid=' + _idUser + '&xuat=' + xuat + '&startTime=' + encodeURIComponent(timeline);
+
+        fetch(url, {
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            }
+        })
+
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(new Blob([blob]));
+                const link = document.createElement('a');
+                link.href = url;
+                if (xuat == 1) {
+                    link.setAttribute('download', 'NCM.xlsx');
+                }
+                else if (xuat == 2) {
+                    link.setAttribute('download', 'KhoaVien.xlsx');
+                }
+                else if (xuat == 4) {
+                    link.setAttribute('download', 'NghienCuuVien.xlsx');
+                }
+                else {
+                    link.setAttribute('download', 'Truong.xlsx');
+                }
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode.removeChild(link);
+            })
+    }
+    function deleteItem(id) {
+        if (confirm("Xác nhận xóa?")) {
+            fetch("https://localhost:44364/api/DanhMucXetDuyetSinhVien/Delete/" + id, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + _token,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        toastr.success('Xóa dữ liệu thành công!');
+                        window.location.href = '/NguoiDung/DeTaiSinhVien';
+                    }
+                    else if (response.status == 400) {
+                        toastr.warning('Không có quyền xóa với trạng thái hiện tại');
+                    } else {
+                        toastr.warning('Có lỗi xảy ra');
+                    }
+                });
+        }
+    }
+    try {
+        clear_hinhthuc();
+        themtacgia();
+    } catch { }
+
+    function checknulluef(i) {
+        try {
+            var inp = document.querySelector('#inp-username-id-mail-' + i).value;
+            var donggop = document.querySelector('#donggop-' + i);
+        } catch { }
+        var option = document.querySelector('#coquancongtac-' + i);
+        var coquancongtac = option.options[option.selectedIndex].textContent;
+        if (inp == "" && coquancongtac == "Cơ quan công tác trong UEF") {
+            toastr.warning('Vui lòng nhập mã NV UEF')
+            option.options[0].selected = true;
+        }
+    }
+
+
+    //Load tác giả table
+    function themtacgia() {
+        try {
+            var a = ``;
+            var sltgc = Number(document.querySelector('#sltgc').value);
+            var sltgp = Number(document.querySelector('#sltgp').value);
+            var valuerank = _ngach;
+            var optionslh = document.querySelector('#loaiHinhKeKhai');
+            var valueloaihinh = optionslh.options[optionslh.selectedIndex].textContent;
+            var selectElement = document.getElementById("loaiCongTrinh");
+            var selectedValue = selectElement.value;
+            var selectedValueYc = document.querySelector('input[name="yc"]:checked').value;
+            ////////alert(valueloaihinh);
+            var sltg = sltgc + sltgp;
+        } catch { }
+        let i = 0;
+        //toastr.warning(valueloaihinh + valuerank);
+        document.querySelector('#tbtacgia2').innerHTML = `<thead style="background-color: #17a2b8;color: white;">
+        <th width="2%">STT</th>
+        <th width="15%">Mã nhân viên</th>
+        <th width="15%">Cơ quan công tác</th>
+        <th width="15%">Loại tác giả</th>
+        </thead>
+        <tbody id="tablethanhtoan">
+        </tbody>`;
+        
+        for (i = 0; i < sltgc; i++) {
+            a += `<tr><td>${i + 1}</td>
+                    <td ><input class="form-control" type="text" placeholder="Nhập Mã GV/Tên thành viên thuộc UEF"   id="inp-username-id-mail-${i}" oninput="inpsearch(${i},render_user)" />
+                    <div id="themtg" style="display: flex">
+                        <div width: 50%">
+                            <dl id="dl-user-${i}">
+                            </dl>
+                        </div>
+                    </div></td>
+                    <td ><div class="form-group">
+                     <select name="coquancongtac" onchange="checknulluef(${i})" id="coquancongtac-${i}" class="form-control">
+                        <option value="0"> --Chọn cơ quan công tác--</option>
+
+                        <option value="1">Cơ quan công tác trong UEF</option>
+                        <option value="0">Cơ quan công tác ngoài UEF</option>
+                    </select>
+                </div></td>
+                    <td>
+                    <div class="form-group">
+                     <select name="coquancongtac" onchange="checknulluef(${i})" id="tg-${i}" class="form-control" disabled>
+                         <option >Chủ nhiệm</option>
+                         </select></td></tr>`;
+        }
+        for (i; i < (sltgp + sltgc); i++) {
+            a += `<tr><td>${i + 1}</td>
+                    <td ><input class="form-control" type="text" placeholder="Nhập Mã GV/Tên thành viên thuộc UEF" id="inp-username-id-mail-${i}"   oninput="inpsearch(${i},render_user)" />
+                    <div id="themtg" style="display: flex">
+                        <div width: 50%">
+                            <dl id="dl-user-${i}">
+                            </dl>
+                        </div>
+                    </div></td>
+                    <td ><div class="form-group">
+                     <select name="coquancongtac" onchange="checknulluef(${i})" id="coquancongtac-${i}" class="form-control">
+                        <option value="0"> --Chọn cơ quan công tác--</option>
+                        <option value="1">Cơ quan công tác trong UEF</option>
+                        <option value="0">Cơ quan công tác ngoài UEF</option>
+                    </select>
+                </div></td>
+                    <td>
+                    <div class="form-group">
+                     <select name="coquancongtac" onchange="checknulluef(${i})" id="tg-${i}" class="form-control" disabled>
+
+                         <option>Thành viên</option>
+                         </td>
+                         </tr>`;
+        }
+
+        try { document.querySelector('#addtacgia').innerHTML = a; } catch { }
+    }
+
+    //Hiển thị tác giả
+    function render_user(users) {
+        var sltgc = Number(document.querySelector('#sltgc').value);
+        var sltgp = Number(document.querySelector('#sltgp').value);
+        var sltg = sltgc + sltgp;
+        for (let i = 0; i < sltg; i++) {
+            try {
+                var tg = document.querySelector('#inp-username-id-mail-' + i);
+                tg.oninput = function () {
+                    var list = document.querySelector('#dl-user-' + i);
+                    list.innerHTML = ``;
+                    inpsearch(i, render_user);
+                    var htmls = users.map(function (user) {
+                        return `<dt value="${user.idUser}" style="border-style: groove;"><button onclick="btnadd('${i}','${user.idUser}','${user.hoTen}')" type="button" class="btn btn-success">Thêm tác giả </button>
+${user.hoTen} - ${user.donViCongTac}</dt>`;
+                    });
+                    list.innerHTML = htmls.join('');
+                }
+            } catch { }
+        }
+    }
+    // Thêm mã tên tác giả
+    function btnadd(id, iduser, name) {
+        var sltgc = Number(document.querySelector('#sltgc').value);
+        var sltgp = Number(document.querySelector('#sltgp').value);
+        var sltg = sltgc + sltgp;
+
+        var tg = document.querySelector('#inp-username-id-mail-' + id);
+        tg.value = ``;
+        if (tg.value == "") {
+            document.querySelector('#dl-user-' + id).innerHTML = ``;
+            tg.value = tg.value + iduser + " - " + name;
+        }
+        try {
+            for (let i = 0; i > sltg; i++) {
+                var tg1 = document.querySelector('#inp-username-id-mail-' + i);
+                for (let j = 1; j > sltg; i++) {
+                    var tg2 = document.querySelector('#inp-username-id-mail-' + j);
+                    if (tg1 == tg2) {
+                        //////alert("Trùng");
+                    }
+                }
+            }
+        } catch { }
+
+        document.querySelector('#dl-user-' + id).innerHTML = ``;
+        loadtable();
+    }
+    // Xử lý công thức tính ...
+
+    // Tìm kiếm tác giả
+    function inpsearch(idinput, callback) {
+        try {
+            var valueinp = document.querySelector('#inp-username-id-mail-' + idinput).value;
+
+        } catch { }
+        ////////alert(valueinp);
+        if (valueinp == "") {
+            document.querySelector('#dl-user-' + idinput).innerHTML = ``;
+        }
+        fetch("https://localhost:44364/api/NguoiDung/Get-user?input=" + valueinp, {
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(function (response) {
+
+                return response.json();
+            })
+            .then(callback)
+    }
+    ////////alert(_token);
+    // Load table clear
+    function clear_hinhthuc() {
+        document.querySelector('#tbtacgiasl').innerHTML = `<thead style="background-color: #17a2b8;color: white;">
+            <th width="2%">STT</th>
+            <th width="20%">Mã nhân viên</th>
+            <th width="20%">Cơ quan công tác</th>
+            <th width="10%">Loại tác giả</th>
+            </thead>
+    
+            <tbody id="addtacgia" onchange="loadtable()">
+            </tbody>`;
+        themtacgia();
+
+    }
+    async function send(data, a) {
+        var linksend = "https://localhost:44364/api/DanhMucXetDuyetSinhVien/Send";
+        var options = {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        };
+        await fetch(linksend, options)
+            .then(response => {
+                if (response.ok) {
+                    toastr.success('Đăng ký thành công', '');
+                } else {
+                    toastr.error('Liên hệ hỗ trợ.', 'Gặp lỗi!')
+                    console.log(response)
+                }
+            });
+    }
+    async function update(data, idmm) {
+        var linksend = "https://localhost:44364/api/DanhMucXetDuyetSinhVien/Update/" + idmm;
+        var options = {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        };
+        await fetch(linksend, options)
+            .then(async (response) => {
+                if (response.ok) {
+                    toastr.success('Sửa thành công');
+                    await fetch(`https://localhost:44364/api/DanhMucXetDuyetSinhVien/Add-lich-su-xu-ly?idDanhMuc=${idmm}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + _token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            by: "Chủ nhiệm",
+                            content: "Chủ nhiệm đã cập nhật thông tin bài báo.",
+                            type: "update",
+                        }),
+                    })
+                } else {
+                    console.log(response);
+                    toastr.warning('Có lỗi');
+                }
+            });
+    }
+    function groupUser() {
+        var table = document.getElementById("tbtacgia2");
+        var groupUser = "";
+
+        for (let i = 1; i < table.rows.length; i++) {
+            const row = table.rows[i];
+
+            for (let j = 0; j < row.cells.length; j++) {
+
+                const cell = row.cells[j].textContent;
+                if (cell == "") {
+                    groupUser += cell + "Trống;";
+                } else {
+                    groupUser += cell + ";";
+                }
+            }
+
+            groupUser = groupUser.slice(0, -1);
+            groupUser += "$";
+        }
+        groupUser = groupUser.slice(0, -1);
+        return groupUser;
+    }
+    ///////// Tính năng mới
+
+    async function handleSend(a, x) {
+        //2 cái hàm ở trên, mấy cái session với vài chỗ trong cục data
+
+        var NguoiKhai = sessionStorage.getItem("NguoiKhai");
+        var Khoa = sessionStorage.getItem("Khoa");
+        var hoten = document.getElementById("xinchao").textContent;
+        var iddmxd = document.getElementById("iddmxd").value;
+        var sltgc = Number(document.querySelector('#sltgc').value);
+        var sltgp = Number(document.querySelector('#sltgp').value);
+        var sltg = sltgc + sltgp;
+        var s = 0;
+        for (let tiennum = 1; tiennum < sltg + 1; tiennum++) {
+            tongtien = Number(document.querySelector('#tbtacgia2').rows[tiennum].cells[4].textContent);
+            s += tongtien;
+        }
+        
+        var valuetenbaibao = document.querySelector('#tenSanPhamKHCN').value;
+        var valuemotabaibao = document.querySelector('#moTaSanPhamKHCN').value;
+        var tgThucHien = document.querySelector('#tgThucHien').value;
+        var sanPhamDuKien = document.querySelector('#sanPhamDuKien').value;
+        var chatLuong = document.querySelector('#chatLuong').value;
+        var kinhPhi = document.querySelector('#kinhPhi').value;
+        var fileDangKy = document.querySelector('#fileDangKy_hidden').value;
+        var fileThuyetMinh = document.querySelector('#fileThuyetMinh_hidden').value;
+        var fileDinhKemLyLich = document.querySelector('#fileDinhKemLyLich_hidden').value;
+
+        var tg = groupUser();
+        var ghichu = sessionStorage.getItem("GhiChu");
+        ////alert(ghichu);
+        ////alert(Khoa + " - " + hoten);
+        ////////alert(loaiCongtrinh);
+        if (iddmxd == "") {
+            var data = {
+                userId: _idUser,
+                tenBaiBao: valuetenbaibao,
+                moTaBaiBao: valuemotabaibao,
+                thoiGianThucHien: tgThucHien,
+                groupUser: tg,
+                jci: Khoa + " - " + hoten,
+                quantity: sltg.toString(),
+                category: sanPhamDuKien + "|~|" + chatLuong,
+                kinhPhi: kinhPhi || 0,
+                ghiChu: "",
+                fileDangKy: fileDangKy,
+                fileThuyetMinh: fileThuyetMinh,
+                fileDinhKemLyLich: fileDinhKemLyLich,
+                status: "Đã nộp hồ sơ",
+                fileStatus: "------------", // 12 - tương ứng với trạng thái kiểm duyệt ban đầu cho 12 file
+            }
+        } else {
+            var data = {
+                idDanhMuc: iddmxd,
+                userId: NguoiKhai,
+                tenBaiBao: valuetenbaibao,
+                moTaBaiBao: valuemotabaibao,
+                thoiGianThucHien: tgThucHien,
+                groupUser: tg,
+                jci: Khoa + " - " + hoten,
+                quantity: sltg.toString(),
+                category: sanPhamDuKien + "|~|" + chatLuong,
+                kinhPhi: kinhPhi || 0,
+                ghiChu: ghichu.toString(),
+                fileDangKy: fileDangKy,
+                fileThuyetMinh: fileThuyetMinh,
+                fileDinhKemLyLich: fileDinhKemLyLich,
+                status: "Đã nộp hồ sơ",
+                fileStatus: "------------", // 12 - tương ứng với trạng thái kiểm duyệt ban đầu cho 12 file
+            }
+        }
+
+        if (articleId == "") {
+            await send(data, a);
+        } else {
+            await update(data, iddmxd);
+        }
+        clear();
+        await getData();
+    }
+    
+    async function handleSaveHopDong() {
+        var fileThuyetMinhHoanChinh = document.querySelector('#fileThuyetMinhHoanChinh_hidden').value;
+        var fileHopDong = document.querySelector('#fileHopDong_hidden').value;
+        var fileQuyetDinhGiaoNhiemVu = document.querySelector('#fileQuyetDinhGiaoNhiemVu_hidden').value;
+
+        if (fileThuyetMinhHoanChinh && fileHopDong && fileQuyetDinhGiaoNhiemVu) {
+            var iddmxd = document.getElementById("iddmxd").value;
+            var fileStatus = document.querySelector('#fileStatus-hop-dong').value;
+            
+            var data = {
+                idDanhMuc: iddmxd,
+                fileThuyetMinhHoanChinh: fileThuyetMinhHoanChinh,
+                fileHopDong: fileHopDong,
+                fileQuyetDinhGiaoNhiemVu: fileQuyetDinhGiaoNhiemVu,
+                fileStatus: fileStatus.slice(0, 3) + "---------" // giữ nguyên giá trị 3 file status lúc kê khai, chỉ cập nhật status của file hợp đồng và các file ở bước sau
+            }
+            
+            var linksend = "https://localhost:44364/api/DanhMucXetDuyetSinhVien/UpdateHopDong/" + iddmxd;
+            var options = {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + _token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            };
+            await fetch(linksend, options)
+                .then(async (response) => {
+                    if (response.ok) {
+                        toastr.success('Cập nhật hợp đồng thành công!');
+                        await fetch(`https://localhost:44364/api/DanhMucXetDuyetSinhVien/Add-lich-su-xu-ly?idDanhMuc=${iddmxd}`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer ' + _token,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                by: "Chủ nhiệm",
+                                content: "Chủ nhiệm đã cập nhật thông tin hợp đồng.",
+                                type: "update",
+                            }),
+                        })
+                    } else {
+                        console.log(response);
+                        toastr.warning('Có lỗi');
+                    }
+                });
+
+            clearHopDongModalContent();
+            await getData();
+            closeModal();
+        } else {
+            toastr.warning('Vui lòng bổ sung đầy đủ các file hồ sơ!');
+        }
+    }
+
+    async function handleSaveNghiemThu() {
+        var iddmxd = document.getElementById("iddmxd").value;
+        var selectElm = document.getElementById("thaoTacNghiemThu");
+        var selectedValue = selectElm.value;
+
+        if (!selectedValue) {
+            toastr.warning('Vui lòng chọn thao tác!');
+            return;
+        }
+
+        var data = {
+            idDanhMuc: iddmxd
+        };
+
+        var fileNghiemThu = {};
+
+        if (selectedValue === "nghiemThu") {
+            var fileDangKy = document.querySelector('#fileDangKyNghiemThu_hidden').value;
+            var fileMinhChung = document.querySelector('#fileMinhChungNghiemThu_hidden').value;
+
+            if (!fileDangKy || !fileMinhChung) {
+                toastr.warning('Vui lòng bổ sung đầy đủ các file nghiệm thu!');
+                return;
+            }
+
+            fileNghiemThu.fileDangKyNghiemThu = {
+                path: fileDangKy,
+                status: "-"
+            };
+            fileNghiemThu.fileMinhChungNghiemThu = {
+                path: fileMinhChung,
+                status: "-"
+            };
+
+        } else if (selectedValue === "huyDeTai") {
+            var fileXinHuy = document.querySelector('#fileXinHuyDeTai_hidden').value;
+            var fileThanhLyHuy = document.querySelector('#fileThanhLyHuyHD_hidden').value;
+            
+            if (!fileXinHuy || !fileThanhLyHuy) {
+                toastr.warning('Vui lòng bổ sung đầy đủ các file hủy đề tài!');
+                return;
+            }
+
+            fileNghiemThu.fileXinHuyDeTai = {
+                path: fileXinHuy,
+                status: "-"
+            };
+            fileNghiemThu.fileThanhLyHuyHD = {
+                path: fileThanhLyHuy,
+                status: "-"
+            };
+
+        } else if (selectedValue === "giaHan") {
+            var fileGiaHan = document.querySelector('#fileGiaHanThucHienDeTai_hidden').value;
+
+            if (!fileGiaHan) {
+                toastr.warning('Vui lòng bổ sung file gia hạn!');
+                return;
+            }
+
+            fileNghiemThu.fileGiaHanThucHienDeTai = {
+                path: fileGiaHan,
+                status: "-"
+            };
+        }
+
+        data.fileThongTinNghiemThu = JSON.stringify(fileNghiemThu);
+
+        var linksend = "https://localhost:44364/api/DanhMucXetDuyetSinhVien/UpdateFileNghiemThu/" + iddmxd;
+        var options = {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + _token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        };
+        await fetch(linksend, options)
+            .then(async (response) => {
+                if (response.ok) {
+                    toastr.success('Cập nhật thông tin thành công!');
+                    await fetch(`https://localhost:44364/api/DanhMucXetDuyetSinhVien/Add-lich-su-xu-ly?idDanhMuc=${iddmxd}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + _token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            by: "Chủ nhiệm",
+                            content: "Chủ nhiệm đã cập nhật thông tin nghiệm thu/gia hạn/hủy.",
+                            type: "update",
+                        }),
+                    })
+                } else {
+                    console.log(response);
+                    toastr.warning('Có lỗi xảy ra');
+                }
+            });
+
+        clearGiaHanNghiemThuModalContent();
+        await getData();
+        closeModal();
+    }
+
+    async function handleSaveThanhLyHopDong() {
+        var fileThanhLyHopDong = document.querySelector('#fileThanhLyHopDong_hidden').value;
+        var fileBaiBaoHopHoiDong = document.querySelector('#fileBaiBaoHopHoiDong_hidden').value;
+        var fileQuyetDinhCongNhanDeTai = document.querySelector('#fileQuyetDinhCongNhanDeTai_hidden').value;
+
+        if (fileThanhLyHopDong && fileBaiBaoHopHoiDong && fileQuyetDinhCongNhanDeTai) {
+            var iddmxd = document.getElementById("iddmxd").value;
+            var fileStatus = document.querySelector('#fileStatus-thanh-ly').value;
+            
+            var data = {
+                idDanhMuc: iddmxd,
+                fileThanhLyHopDong: fileThanhLyHopDong,
+                fileBaiBaoHopHoiDong: fileBaiBaoHopHoiDong,
+                fileQuyetDinhCongNhanDeTai: fileQuyetDinhCongNhanDeTai,
+                fileStatus: fileStatus.slice(0, 9) + "---" // giữ nguyên giá trị 9 file status ở các bước trước, chỉ cập nhật status của các file ở bước sau
+            }
+            
+            var linksend = "https://localhost:44364/api/DanhMucXetDuyetSinhVien/UpdateFileThanhLyHopDong/" + iddmxd;
+            var options = {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + _token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            };
+            await fetch(linksend, options)
+                .then(async (response) => {
+                    if (response.ok) {
+                        toastr.success('Cập nhật thông tin thanh lý thành công!');
+                        await fetch(`https://localhost:44364/api/DanhMucXetDuyetSinhVien/Add-lich-su-xu-ly?idDanhMuc=${iddmxd}`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer ' + _token,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                by: "Chủ nhiệm",
+                                content: "Chủ nhiệm đã cập nhật thông tin thanh lý hợp đồng.",
+                                type: "update",
+                            }),
+                        })
+                    } else {
+                        console.log(response);
+                        toastr.warning('Có lỗi');
+                    }
+                });
+
+            clearHopDongModalContent();
+            await getData();
+            closeModal();
+        } else {
+            toastr.warning('Vui lòng bổ sung đầy đủ các file hồ sơ!');
+        }
+    }
+
+    // Hàm k cần enter khi tra mã
+    async function clickinp() {
+        var isIssn = document.getElementById("isIssn");
+        isIssn.innerHTML = ``;
+        await Get_issn(renderGet_issn);
+    }
+
+    function formatCurrency(amount) {
+        var formatter = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        });
+
+        return formatter.format(amount);
+    }
+    // Dịch ngược currency về thành number.
+    function parseCurrency(currency) {
+        // Nếu đầu vào đã là số, trả về ngay
+        if (typeof currency === 'number') {
+            return currency;
+        }
+
+        // Nếu đầu vào là chuỗi, xử lý để chuyển thành số
+        if (typeof currency === 'string') {
+            // Xóa ký hiệu tiền tệ, khoảng trắng và dấu phân cách
+            let cleaned = currency.replace(/[^\d\-]/g, '');
+            
+            // Chuyển đổi chuỗi đã làm sạch thành số
+            return parseInt(cleaned, 10);
+        }
+    
+        // Nếu đầu vào không hợp lệ, trả về NaN
+        return NaN;
+    }
+    // Chặn thoát
+    function closeModal() {
+        $('#modal-xl-create').modal('hide');
+        $('#modal-xl-hop-dong').modal('hide');
+        $('#modal-xl-gia-han-nghiem-thu').modal('hide');
+    }
+</script>
+<script src="~/Scripts/toastr.js"></script>

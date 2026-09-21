@@ -1,0 +1,303 @@
+﻿@{
+  ViewBag.Title = "Index";
+  Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+<div class="pagetitle" style=" display: flex; align-items: center; justify-content: space-between;">
+  <h1>QUY ĐỔI NGHIÊN CỨU VIÊN</h1>
+  <div style=" display: flex; align-items: center;">
+    <a type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal-lg-create">Thêm mới</a>
+    <input type="file" id="importFileInput" accept=".xlsx,.xls">
+    <button class="btn btn-sm btn-success" onclick="importExcel()">Import Excel</button>
+  </div>
+</div>
+
+<section class="section">
+  <div class="card">
+    <h5 class="card-title"></h5>
+
+    <div class="card-body">
+      <table id="example1" class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Loại sản phẩm</th>
+            <th>Mô tả loại sản phẩm</th>
+            <th>Yêu cầu tiêu chuẩn</th>
+            <th>Tiết chuẩn</th>
+            <th>Điểm</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="modal-lg">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Sửa</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <!-- form start -->
+          <form>
+            <div class="card-body">
+              <div class="form-group">
+                <input type="hidden" class="form-control" id="id">
+                <div class="form-group">
+                  <label for="loaiSanPham" class="form-label">Loại sản phẩm:</label>
+                  <input type="text" class="form-control" id="loaiSanPham">
+                </div>
+                <div class="form-group">
+                  <label for="moTaLoaiSanPham" class="form-label">Mô tả loại sản phẩm:</label>
+                  <input type="text" class="form-control" id="moTaLoaiSanPham">
+                </div>
+                <div class="form-group">
+                  <label for="yeuCauTieuChuan" class="form-label">Yêu cầu tiêu chuẩn:</label>
+                  <input type="text" class="form-control" id="yeuCauTieuChuan">
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="tietChuan" class="form-label">Tiết chuẩn:</label>
+                    <input type="text" class="form-control" id="tietChuan">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="diem" class="form-label">Điểm:</label>
+                    <input type="text" class="form-control" id="diem">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="sua()">Save changes</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="modal-lg-create" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Thêm mới</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <!-- form start -->
+          <form>
+            <div class="card-body">
+              <div class="form-group">
+                <div class="form-group">
+                  <label for="loaiSanPhamcr" class="form-label">Loại sản phẩm:</label>
+                  <input type="text" class="form-control" id="loaiSanPhamcr">
+                </div>
+                <div class="form-group">
+                  <label for="moTaLoaiSanPhamcr" class="form-label">Mô tả loại sản phẩm</label>
+                  <input type="text" class="form-control" id="moTaLoaiSanPhamcr">
+                </div>
+                <div class="form-group">
+                  <label for="yeuCauTieuChuancr" class="form-label">Yêu cầu tiêu chuẩn:</label>
+                  <input type="text" class="form-control" id="yeuCauTieuChuancr">
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="tietChuancr" class="form-label">Tiết chuẩn:</label>
+                    <input type="text" class="form-control" id="tietChuancr">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="diemcr" class="form-label">Điểm:</label>
+                    <input type="text" class="form-control" id="diemcr">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal" onclick="location.href='/QuyDoiNCV/Index'">Close</button>
+        <button type="button" class="btn btn-primary" onclick="themMoi()">Add</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    function getData() {
+      fetch('https://localhost:44364/api/QuyDoiNCV/Get-all', {
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+
+          const tbody = document.querySelector('#example1 tbody');
+          data.forEach(function (row) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = "<td width='5%' align='center'>" + row.id + "</td>" +
+              "<td>" + row.loaiSanPham + "</td>" +
+              "<td>" + row.moTaLoaiSanPham + "</td>" +
+              "<td>" + row.yeuCauTieuChuan + "</td>" +
+              "<td width='12%'>" + row.tietChuan + "</td>" +
+              "<td width='12%'>" + row.diem + "</td>" +
+              "<td width='3%'><a type='button' data-bs-toggle='modal' data-bs-target='#modal-lg' onclick='xemchitiet(" + row.id + ")'><i class='bi bi-pencil-square' style='color: #3276b1;'></i></a></td>" +
+              "<td width='3%'><a type='button' onclick='deleteItem(" + row.id + ")'><i class='bi bi-trash' style='color: #c82333;'></i></a></td>";
+            tbody.appendChild(tr);
+          });
+          $(function () {
+            $("#example1").DataTable({
+              "retrieve": true, // Cho phép sử dụng lại bảng đã được khởi tạo mà không cần khởi tạo lại
+              "paging": true,
+              "searching": true,
+              "ordering": true,
+              "info": true,
+              "lengthChange": false,
+              "autoWidth": false,
+              "responsive": false, // Đặt về false để sử dụng scrollX hiệu quả
+              "scrollX": true,  // Kích hoạt scroll ngang
+              "scrollCollapse": true, // Tự động thu gọn chiều rộng
+              "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+          });
+        });
+
+    }
+    getData();
+
+  });
+  function xemchitiet(idqd, callback) {
+    fetch('https://localhost:44364/api/QuyDoiNCV/Get-id?ID=' + idqd, {
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("id").value = data.id;
+        document.getElementById("loaiSanPham").value = data.loaiSanPham;
+        document.getElementById("moTaLoaiSanPham").value = data.moTaLoaiSanPham;
+        document.getElementById("yeuCauTieuChuan").value = data.yeuCauTieuChuan;
+        document.getElementById("tietChuan").value = data.tietChuan;
+        document.getElementById("diem").value = data.diem;
+      })
+  }
+  function themMoi() {
+    const data = {
+      loaiSanPham: document.getElementById("loaiSanPhamcr").value,
+      moTaLoaiSanPham: document.getElementById("moTaLoaiSanPhamcr").value,
+      yeuCauTieuChuan: document.getElementById("yeuCauTieuChuancr").value,
+      tietChuan: document.getElementById("tietChuancr").value,
+      diem: document.getElementById("diemcr").value
+    }
+    fetch('https://localhost:44364/api/QuyDoiNCV/Create', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => {
+        if (response.ok) {
+          alert('Thêm dữ liệu thành công!');
+          // Đóng modal
+          $('#modal-lg-create').modal('hide');
+
+          // Load lại trang
+          location.reload();
+        } else {
+          alert('Có lỗi');
+        }
+      });
+  }
+
+  function sua() {
+    const data = {
+      id: document.getElementById("id").value,
+      loaiSanPham: document.getElementById("loaiSanPham").value,
+      moTaLoaiSanPham: document.getElementById("moTaLoaiSanPham").value,
+      yeuCauTieuChuan: document.getElementById("yeuCauTieuChuan").value,
+      tietChuan: document.getElementById("tietChuan").value,
+      diem: document.getElementById("diem").value
+    }
+    fetch('https://localhost:44364/api/QuyDoiNCV/Update/' + data.id, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => {
+        if (response.ok) {
+          alert('Cập nhật dữ liệu thành công');
+          window.location.href = '/QuyDoiNCV/Index';
+        } else {
+          alert('Có lỗi xảy ra');
+        }
+      });
+  }
+  //Xóa
+  function deleteItem(id) {
+    if (confirm("Xác nhận xóa?")) {
+      fetch("https://localhost:44364/api/QuyDoiNCV/Delete/" + id, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            alert('Xóa dữ liệu thành công!');
+            window.location.href = '/QuyDoiNCV/Index';
+          } else {
+            alert('Có lỗi xảy ra');
+          }
+        });
+    }
+  }
+
+  function importExcel() {
+    const input = document.querySelector('#importFileInput');
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('https://localhost:44364/api/QuyDoiNCV/ImportExcel', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+      },
+      body: formData
+    })
+      .then(response => {
+        if (!response.ok) {
+          return alert("Có lỗi xảy ra");
+        }
+        return alert("Nhập dữ liệu thành công");
+      })
+  }
+</script>

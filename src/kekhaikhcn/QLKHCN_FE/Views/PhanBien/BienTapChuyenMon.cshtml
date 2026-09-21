@@ -1,0 +1,620 @@
+﻿@{
+  ViewBag.Title = "Tạp chí Phát Triển và Hội Nhập - UEF";
+  Layout = "~/Views/Shared/_JDILayout.cshtml";
+}
+
+<style>
+  .section table.table {
+    --bs-table-bg: none;
+  }
+
+  .section table tbody tr:hover {
+    background: #eee;
+    cursor: pointer;
+  }
+  
+  .page-size-A4 {
+    background: #fff;
+    display: block;
+    max-width: 1140px;
+    margin-bottom: .5cm;
+    border: 2px dashed #cdcdcd;
+    padding: 4rem;
+  }
+  
+  @@media only screen and (max-width: 992px) {
+    .page-size-A4 {
+      padding: 2rem;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+    }
+  }
+</style>
+
+<div class="pagetitle">
+  
+  <h1>Biên tập chuyên môn</h1>
+  <nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/PhanBien/Index">PhanBien</a></li>
+      <li class="breadcrumb-item active">BienTapChuyenMon</li>
+    </ol>
+  </nav>
+</div>
+
+<section class="section">
+  
+  <div class="row">
+
+    <div class="col-lg-12">
+      
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Bản thảo</h5>
+
+          <!-- Table with stripped rows -->
+          <table class="table datatable">
+            <thead>
+            <tr>
+              <th>STT</th>
+              <th>Bản thảo</th>
+              <th>Lĩnh vực</th>
+              <th data-type="datetime" data-format="dd/MM/yyyy hh:mm:ss">Ngày nộp</th>
+              <th>Tình trạng bản thảo</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr data-bs-toggle="modal" data-bs-target="#modal-xl">
+              <td>1</td>
+              <td>
+                <p>Hệ thống nuôi tôm Tiết kiệm năng lượng tiên tiến sử dụng năng lượng sinh khối tại Tỉnh Tiền Giang</p>
+                <small class="text-secondary"><i>[id: JDI - 2024 - 255]</i></small>
+              </td>
+              <td>Công nghệ & Kỹ thuật</td>
+              <td>30/10/2024 17:45:55</td>
+              <td>
+                <p>
+                  <strong>Bản thảo:</strong> <span class="badge bg-warning text-dark">Đang phản biện</span><br />
+                  <strong>Phản biện:</strong> Nguyễn Lê Duy Luân - <span class="badge bg-success">Đã phản biện</span><br />
+                  Lê Thị Thu Nga - <span class="badge bg-success">Đã phản biện</span><br />
+                </p>
+              </td>
+            </tr>
+            <tr data-bs-toggle="modal" data-bs-target="#modal-xl">
+              <td>2</td>
+              <td>
+                <p>NGHIÊN CỨU VỀ Ý ĐỊNH NHẢY VIỆC CỦA GIỚI TRẺ TẠI THÀNH PHỐ HỒ CHÍ MINH</p>
+                <small class="text-secondary"><i>[id: JDI - 2024 - 205]</i></small>
+              </td>
+              <td>Công nghệ & Kỹ thuật</td>
+              <td>09/08/2024 06:47:22</td>
+              <td>
+                <p>
+                  <strong>Bản thảo:</strong> <span class="badge bg-primary">Sau chỉnh sửa chờ xử lý</span>
+                  <strong>Phản biện:</strong> HUYNH NHUT NGHIA - <span class="badge bg-success">Đã phản biện</span><br />
+                  Nguyễn Ngọc Duyên - <span class="badge bg-danger">Từ chối</span><br />
+                  Vương Thị Hương Giang - <span class="badge bg-danger">Từ chối</span><br />
+                  Lê Phương Giao Linh - <span class="badge bg-warning text-dark">Đang phản biện</span><br />
+                  NGUYỄN HÀ THÙY DƯƠNG - <span class="badge bg-danger">Từ chối</span><br />
+                  Lâm Thanh Phi Quỳnh - <span class="badge bg-success">Đã phản biện</span><br />
+                  HUYNH NHUT NGHIA - <span class="badge bg-warning text-dark">Đang phản biện</span><br />
+                  Lâm Thanh Phi Quỳnh - <span class="badge bg-success">Đã phản biện</span><br />
+                </p>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          <!-- End Table with stripped rows -->
+
+        </div>
+      </div>
+      
+    </div>
+
+  </div>
+
+</section>
+
+<div class="modal fade" id="modal-xl" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">NGHIÊN CỨU VỀ Ý ĐỊNH NHẢY VIỆC CỦA GIỚI TRẺ THÀNH PHỐ HỒ CHÍ MINH</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div> <!-- modal header -->
+      
+      <div class="modal-body">
+        
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="phan-bien-chuyen-mon-tab" data-bs-toggle="tab" data-bs-target="#phan-bien-chuyen-mon" type="button" role="tab" aria-controls="phan-bien-chuyen-mon" aria-selected="true">Phản biện chuyên môn</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="thong-tin-ban-thao-tab" data-bs-toggle="tab" data-bs-target="#thong-tin-ban-thao" type="button" role="tab" aria-controls="thong-tin-ban-thao" aria-selected="false">Thông tin bản thảo</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="moi-phan-bien-tab" data-bs-toggle="tab" data-bs-target="#moi-phan-bien" type="button" role="tab" aria-controls="moi-phan-bien" aria-selected="false">Mời phản biện</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="lich-su-xu-ly-tab" data-bs-toggle="tab" data-bs-target="#lich-su-xu-ly" type="button" role="tab" aria-controls="lich-su-xu-ly" aria-selected="false">Lịch sử xử lý</button>
+          </li>
+        </ul>
+        
+        <div class="tab-content pt-2" id="myTabContent">
+          <div class="tab-pane fade show active" id="phan-bien-chuyen-mon" role="tabpanel" aria-labelledby="phan-bien-chuyen-mon-tab">
+
+            <h4><i class="bi bi-list-check"></i> Tình trạng bản thảo</h4>
+            <p><strong>Tình trạng:</strong> <span class="badge bg-primary">Sau chỉnh sửa chờ xử lý</span></p>
+            <p><strong>Thời gian nộp:</strong> 09/08/2024 06:47:22</p>
+            
+            <h4><i class="bi bi-list-check"></i> Phản biện</h4>
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th scope="col">STT</th>
+                <th scope="col">Họ tên</th>
+                <th scope="col">Email</th>
+                <th scope="col">Thời gian mời</th>
+                <th scope="col">Thời hạn</th>
+                <th scope="col"></th>
+                <th scope="col">Tác vụ</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Lâm Thanh Phi Quỳnh</td>
+                <td>quynhltp@uef.edu.vn</td>
+                <td>18/12/2024 11:34</td>
+                <td>02/01/2025</td>
+                <td>
+                  <span class="badge bg-success">Đã phản biện</span>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>HUYNH NHUT NGHIA</td>
+                <td>nghiahn@uef.edu.vn</td>
+                <td>18/12/2024 11:33</td>
+                <td>01/01/2025</td>
+                <td>
+                  <span class="badge bg-warning text-dark">Đang phản biện</span>
+                </td>
+                <td>
+                  <button class="btn btn-outline-danger">X Hủy phản biện</button>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">3</th>
+                <td>Lâm Thanh Phi Quỳnh</td>
+                <td>quynhltp@uef.edu.vn</td>
+                <td>07/11/2024 15:59</td>
+                <td>24/11/2024</td>
+                <td>
+                  <span class="badge bg-success">Đã phản biện</span>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row">4</th>
+                <td>Vương Thị Hương Giang</td>
+                <td>giangvth@hub.edu.vn</td>
+                <td>25/10/2024 08:29</td>
+                <td></td>
+                <td>
+                  <span class="badge bg-danger">Từ chối</span>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td>Nguyễn Ngọc Duyên</td>
+                <td>ntnduyen@hcmulaw.edu.vn</td>
+                <td>25/10/2024 08:29</td>
+                <td></td>
+                <td>
+                  <span class="badge bg-danger">Từ chối</span>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row">6</th>
+                <td>NGUYỄN HÀ THÙY DƯƠNG</td>
+                <td>nhtd7703@gmail.com</td>
+                <td>14/10/2024 09:15</td>
+                <td></td>
+                <td>
+                  <span class="badge bg-danger">Từ chối</span>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <th scope="row">7</th>
+                <td>Lê Phương Giao Linh</td>
+                <td>linhlpg@ueh.edu.vn</td>
+                <td>17/08/2024 11:27</td>
+                <td>03/09/2024</td>
+                <td>
+                  <span class="badge bg-warning text-dark">Đang phản biện</span>
+                </td>
+                <td>
+                  <button class="btn btn-outline-danger">X Hủy phản biện</button>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">8</th>
+                <td>HUYNH NHUT NGHIA</td>
+                <td>nghiahn@uef.edu.vn</td>
+                <td>17/08/2024 11:24</td>
+                <td>06/09/2024</td>
+                <td>
+                  <span class="badge bg-success">Đã phản biện</span>
+                </td>
+                <td></td>
+              </tr>
+              </tbody>
+            </table>
+            <button class="btn btn-primary">Nhắc nhở phản biện</button>
+            
+          </div>
+          
+          <div class="tab-pane fade" id="thong-tin-ban-thao" role="tabpanel" aria-labelledby="thong-tin-ban-thao-tab">
+            <div class="page-size-A4">
+              <div class="row mb-5">
+                <div class="col-sm-12">
+                  <h4>NGHIÊN CỨU VỀ Ý ĐỊNH NHẢY VIỆC CỦA GIỚI TRẺ TẠI THÀNH PHỐ HỒ CHÍ MINH</h4>
+                  <h6>( RESEARCH ON JOB TURNOVER INTENTION OF YOUNG PEOPLE IN HO CHI MINH CITY )</h6>
+                  <small class="text-secondary"><i>[id: JDI - 2024 - 205]</i></small>
+                  <p>
+                    <span class="badge bg-secondary">Ngôn ngữ: Tiếng Việt</span>
+                    <span class="badge bg-secondary">Loại bản thảo: Bản Thảo Nghiên Cứu Gốc (Original Research Manuscript)</span>
+                    <span class="badge bg-secondary">Lĩnh vực: Kinh doanh & Quản lý</span>
+                  </p>
+                </div>
+              </div>
+              
+              <div class="row mb-5">
+                <div class="col-sm-12">
+                  <h5>Tác giả</h5>
+                  <p>
+                    #1. <strong>Hiếu Khắc Nguyễn</strong>, [hieunk@hcmute.edu.vn]<br />
+                    Trường Đại học Sư phạm Kỹ thuật TP.HCM, Việt Nam<br />
+                    [Tác giả liên hệ]
+                  </p>
+                  <p>
+                    #2. <strong>An Khoa Nam Nguyễn</strong>, [22126001@student.hcmute.edu.vn]<br />
+                    Sinh viên-Trường Đại học SPKT TP.HCM, Việt Nam
+                  </p>
+                  <p>
+                    #3. <strong>Bảo Thái Lê</strong>, [22126005@student.hcmute.edu.vn]<br />
+                    Sinh viên Đại học SPKT TP.HCM, Việt Nam
+                  </p>
+                  <p>
+                    #4. <strong>Tiên Thị Xuân Nguyễn</strong>, [22126060@student.hcmute.edu.vn]<br />
+                    Sinh viên Trường Đại học SPKT TP.HCM, Việt Nam
+                  </p>
+                  <p>
+                    #5. <strong>Tiến Nhật Ngô</strong>, [22126061@student.hcmute.edu.vn]<br />
+                    Sinh viên Trường Đại học SPKT TP.HCM, Việt Nam
+                  </p>
+                  <p>
+                    #6. <strong>Trung Thành Mai</strong>, [22126069@student.hcmute.edu.vn]<br />
+                    Sinh viên Trường Đại học SPKT TP.HCM, Việt Nam
+                  </p>
+                </div>
+              </div>
+              
+              <div class="row mb-5">
+                <div class="col-sm-12">
+                  <h5>Tóm tắt</h5>
+                  <div>
+                    [<strong>Tiếng Việt</strong>]
+                    <br />
+                    <p style="text-align: justify; line-height: 150%; border: none; mso-padding-alt: 31.0pt 31.0pt 31.0pt 31.0pt; mso-border-shadow: yes; margin: 0 1.0cm 6.0pt 36.0pt;">
+                      <em style="mso-bidi-font-style: normal;">
+                        <span style="color: black;">Việc hiểu rõ những yếu tố ảnh hưởng đến ý định nhảy việc của giới trẻ sẽ giúp các doanh nghiệp xây dựng chiến lược phát triển nguồn nhân lực phù hợp góp phần vào sự phát triển ổn định của doanh nghiệp. Nghiên cứu này nhằm phân tích các yếu tố ảnh hưởng đến ý định nhảy việc của giới trẻ đang sinh sống tại TP. Hồ Chí Minh, nơi có sự phát triển nhanh chóng về kinh tế, khoa học và công nghệ. Nghiên cứu đã thực hiện khảo sát 240 người trong độ tuổi từ 18 đến 30 và sinh sống tại TP. Hồ Chí Minh. Sau đó chúng tôi sử dụng phương pháp PLS-SEM để đánh giá và phân tích dữ liệu được khảo sát. Kết quả cho thấy, các yếu tố Sự cam kết với tổ chức, Lương và phúc lợi, kiệt quệ về tinh thần, mối quan hệ với đồng nghiệp là các yếu tố có tác động đến ý định nhảy việc của giới trẻ.</span>
+                      </em>
+                    </p>
+                    [<strong class="mt-3">Tiếng Anh</strong>]
+                    <br />
+                    <p style="text-align: justify; line-height: 150%; border: none; mso-padding-alt: 31.0pt 31.0pt 31.0pt 31.0pt; mso-border-shadow: yes; margin: 0 1.0cm 6.0pt 36.0pt;">
+                      <em style="mso-bidi-font-style: normal;">
+                        <span style="color: black;">Understanding the factors that influence the job turnover intention of young people will help businesses build appropriate human resource development strategies that contribute to the stable development of the business. This study analyses the factors influencing the intention to change jobs for young people living in Ho Chi Minh City, a place with rapid economic, scientific, and technological development. The study surveyed 240 people aged 18 to 30 living in Ho Chi Minh City. Then, we used the PLS-SEM method to evaluate and analyse the surveyed data. The results showed that organisational commitment, salary and benefits, emotional exhaustion, and employee relations affect young people's job turnover intentions.</span>
+                      </em>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row mb-5">
+                <div class="col-sm-12">
+                  <h5>File bản thảo</h5>
+                  
+                  <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                          Xác nhận quyền tác giả, xung đột lợi ích
+                        </button>
+                      </h2>
+                      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <a href="#">File download here.</a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                          Bản thảo bài viết (có đầy đủ tên tác giả)
+                        </button>
+                      </h2>
+                      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <a href="#">File download here.</a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                          Bản thảo bài viết (khuyết tên tác giả)
+                        </button>
+                      </h2>
+                      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <a href="#">File download here.</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row mb-5">
+                <div class="col-sm-12">
+                  <h5>Đề xuất phản biện</h5>
+                  <small class="text-secondary"><i>Không có</i></small>
+                </div>
+              </div>
+              
+              <div class="row mb-5">
+                <div class="col-sm-12">
+                  <h5>Ý kiến đến biên tập</h5>
+                  <small class="text-secondary"><i>Không có</i></small>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-pane fade" id="moi-phan-bien" role="tabpanel" aria-labelledby="moi-phan-bien-tab">
+            <h4><i class="bi bi-list-check"></i> Mời phản biện</h4>
+            
+            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+              <i class="bi bi-info-circle me-1"></i>
+              Vui lòng nhập vào ô <strong>"Tìm kiếm"</strong> để mời phản biện.<br />
+              Trong trường hợp người phản biện chưa có trên hệ thống, Biên tập chuyên môn vào <strong>"Tạo tài khoản"</strong> để tạo tài khoản cho họ và mời phản biện.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+            <ul class="nav nav-tabs" id="moi-phan-bienTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tim-kiem-tab" data-bs-toggle="tab" data-bs-target="#tim-kiem" type="button" role="tab" aria-controls="tim-kiem" aria-selected="true">Tìm kiếm</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tao-tai-khoan-tab" data-bs-toggle="tab" data-bs-target="#tao-tai-khoan" type="button" role="tab" aria-controls="tao-tai-khoan" aria-selected="false">Tạo tài khoản</button>
+              </li>
+            </ul>
+            <div class="tab-content pt-2" id="moi-phan-bienTabContent">
+              <div class="tab-pane fade show active" id="tim-kiem" role="tabpanel" aria-labelledby="tim-kiem-tab">
+                
+                <table class="table datatable">
+                  <thead>
+                    <tr>
+                      <th>STT</th>
+                      <th>Phản biện</th>
+                      <th>Email</th>
+                      <th>Cơ quan công tác</th>
+                      <th>Lĩnh vực chuyên môn</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Võ Phạm Thành Luân</td>
+                      <td>vpt.luan@hutech.edu.vn</td>
+                      <td>HUTECH</td>
+                      <td>Công nghệ thông tin</td>
+                      <td>
+                        <button type="button" class="btn btn-outline-primary"><i class="bi bi-person-plus me-1"></i> Mời phản biện</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>Nguyễn Khánh Duy</td>
+                      <td>nkduy.dev@gmail.com</td>
+                      <td>HUTECH</td>
+                      <td>Công nghệ thông tin</td>
+                      <td>
+                        <button type="button" class="btn btn-outline-primary"><i class="bi bi-person-plus me-1"></i> Mời phản biện</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>3</td>
+                      <td>Nguyễn Tấn Dũng</td>
+                      <td>nguyentandung@gmail.com</td>
+                      <td>HUTECH</td>
+                      <td>Công nghệ thông tin</td>
+                      <td>
+                        <button type="button" class="btn btn-outline-primary"><i class="bi bi-person-plus me-1"></i> Mời phản biện</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>4</td>
+                      <td>Trần Gia Kiệt</td>
+                      <td>trangiakiet@gmail.com</td>
+                      <td>HUTECH</td>
+                      <td>Công nghệ thông tin</td>
+                      <td>
+                        <button type="button" class="btn btn-outline-primary"><i class="bi bi-person-plus me-1"></i> Mời phản biện</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                
+              </div>
+              
+              <div class="tab-pane fade" id="tao-tai-khoan" role="tabpanel" aria-labelledby="tao-tai-khoan-tab">
+                
+                <div class="row">
+                  <div class="col-6">
+                    <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title">Thông tin cá nhân</h5>
+          
+                        <!-- Floating Labels Form -->
+                        <form class="row g-3">
+                          <div class="col-md-3">
+                            <div class="form-floating">
+                              <select class="form-select" id="floatingChucDanh" aria-label="Chức danh">
+                                <option value="0">Ông</option>
+                                <option value="1">Bà</option>
+                                <option value="2">CN.</option>
+                                <option value="3">KS.</option>
+                                <option value="4">ThS.</option>
+                                <option value="5">TS.</option>
+                                <option value="6">PSG. TS.</option>
+                                <option value="7">SG. TS.</option>
+                              </select>
+                              <label for="floatingChucDanh">Chức danh</label>
+                            </div>
+                          </div>
+                          <div class="col-md-9">
+                            <div class="form-floating">
+                              <input type="text" class="form-control" id="floatingName" placeholder="Họ tên">
+                              <label for="floatingName">Họ tên</label>
+                            </div>
+                          </div>
+                          <div class="col-md-12">
+                            <div class="form-floating">
+                              <input type="email" class="form-control" id="floatingEmail" placeholder="Email">
+                              <label for="floatingEmail">Email</label>
+                            </div>
+                          </div>
+                          <div class="col-md-12">
+                            <div class="form-floating">
+                              <select class="form-select" id="floatingLinhVucChuyenMon" aria-label="Lĩnh vực chuyên môn">
+                                <option value="0">Tài chính - Ngân hàng</option>
+                                <option value="1">Kinh doanh & Quản lý</option>
+                                <option value="2">Công nghệ & Kỹ thuật</option>
+                                <option value="3">Khoa học Xã hội</option>
+                                <option value="4">Kế toán - Kiểm toán</option>
+                              </select>
+                              <label for="floatingLinhVucChuyenMon">Lĩnh vực chuyên môn</label>
+                            </div>
+                          </div>
+                          <div class="col-md-8">
+                            <div class="col-md-12">
+                              <div class="form-floating">
+                                <input type="text" class="form-control" id="floatingCoQuanCongTac" placeholder="Cơ quan công tác">
+                                <label for="floatingCoQuanCongTac">Cơ quan công tác</label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                              <select class="form-select" id="floatingSelect" aria-label="Quốc gia">
+                                <option value="0" selected>Việt Nam</option>
+                                <option value="1">Nước ngoài</option>
+                              </select>
+                              <label for="floatingSelect">Quốc gia</label>
+                            </div>
+                          </div>
+                          <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                          </div>
+                        </form><!-- End floating Labels Form -->
+
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-6">
+                    <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title">Yêu cầu</h5>
+                        
+                        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                          Thời hạn để phản hồi yêu cầu phản biện là 7 ngày!
+                          @* <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> *@
+                        </div>
+                        
+                        <form class="row g-3">
+                          <div class="col-12">
+                            <div class="form-floating">
+                              <textarea class="form-control" placeholder="Lời nhắn" id="floatingLoiNhan" style="height: 100px;"></textarea>
+                              <label for="floatingLoiNhan">Lời nhắn</label>
+                            </div>
+                          </div>
+                          <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+
+              </div>
+            </div>
+          </div>
+          
+          <div class="tab-pane fade" id="lich-su-xu-ly" role="tabpanel" aria-labelledby="lich-su-xu-ly-tab">
+            
+            <div class="dashboard">
+              <div class="activity">
+  
+                <div class="activity-item d-flex">
+                  <div class="activite-label">22/12/2024 11:18:45 AM</div>
+                  <i class="bi bi-circle-fill activity-badge text-success align-self-start"></i>
+                  <div class="activity-content">
+                    Lâm Thanh Phi Quỳnh <small class="text-secondary"><i>(Phản biện gửi thông tin phản biện)</i></small>
+                  </div>
+                </div><!-- End activity item-->
+
+                <div class="activity-item d-flex">
+                  <div class="activite-label">19/12/2024 18:57:44 PM</div>
+                  <i class="bi bi-circle-fill activity-badge text-danger align-self-start"></i>
+                  <div class="activity-content">
+                    Lâm Thanh Phi Quỳnh <small class="text-secondary"><i>(Phản biện chấp nhận lời mời)</i></small>
+                  </div>
+                </div><!-- End activity item-->
+
+                <div class="activity-item d-flex">
+                  <div class="activite-label">18/12/2024 13:07:34 PM</div>
+                  <i class="bi bi-circle-fill activity-badge text-primary align-self-start"></i>
+                  <div class="activity-content">
+                    HUYNH NHUT NGHIA <small class="text-secondary"><i>(Phản biện chấp nhận lời mời)</i></small>
+                  </div>
+                </div>
+  
+              </div>
+            </div>
+            
+          </div>
+        </div>
+        
+      </div> <!-- modal body -->
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> <!-- modal footer -->
+    </div>
+  </div>
+</div>

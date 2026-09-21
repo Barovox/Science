@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Error";
+    Layout = null; 
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Error</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            text-align: center;
+        }
+
+        .error-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .error-image {
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .error-link {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <img class="error-image" src="error-image.jpg" alt="Error" width="200" height="200" />
+        <h1 class="error-message">Oops! Something went wrong.</h1>
+        <p>We're sorry, but an error occurred while processing your request.</p>
+        <p>Please go back to the <a class="error-link" href="/">homepage</a>.</p>
+    </div>
+</body>
+</html>

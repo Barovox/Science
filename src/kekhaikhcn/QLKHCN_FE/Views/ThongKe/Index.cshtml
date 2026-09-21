@@ -1,0 +1,829 @@
+﻿@{
+  ViewBag.Title = "Index";
+  Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+@{
+  // Xác định năm học bắt đầu và năm học hiện tại
+  int startYear = 2022;
+  int currentYear = DateTime.Now.Year;
+
+  // Tạo danh sách năm học
+  var years = new List<dynamic>();
+  for (int year = startYear; year <= currentYear; year++)
+  {
+    string nextYear = (year + 1).ToString();
+    // add list
+    years.Add(new
+    {
+      Year = $"{year}",
+      YearOption = $"{year} - {nextYear}"
+    });
+  }
+
+  // Đảo ngược danh sách
+  years.Reverse();
+}
+
+<style>
+  #timeline {
+    padding: 10px;
+    border: none;
+    background-color: #f2f2f2;
+    color: #333;
+    font-size: 16px;
+    border-radius: 5px;
+    outline: none;
+    transition: box-shadow 0.3s;
+    margin-left: 5%;
+  }
+
+    #timeline:hover {
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    #timeline:focus {
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+
+    #timeline::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid #333;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pagination-nav {
+    display: flex;
+    justify-content: flex-end;
+    flex-grow: 1;
+  }
+</style>
+
+<div class="pagetitle">
+  <h1>THỐNG KÊ</h1>
+  <select id="timeline">
+    <option selected disabled>-- Chọn năm học để xem thống kê --</option>
+    @foreach (var year in years)
+    {
+      <option value="@year.Year">@year.YearOption</option>
+    }
+  </select>
+  @*<input type="text" placeholder="Search" id="searchData" />
+    <button class="btn btn-primary">Tìm kiếm</button>*@
+</div>
+
+<!-- Content Wrapper. Contains page content -->
+<!-- Main content -->
+<section class="section">
+  <div class="row">
+    <div class="col-md-6">
+      <!-- AREA CHART -->
+      <div class="card card-primary" style=" display: none; ">
+        <div class="card-header">
+          <h3 class="card-title">Area Chart</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart">
+            <canvas id="areaChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+      <!-- DONUT CHART -->
+      <div class="card card-danger" id="card1">
+        <div class="card-body">
+          <h3 class="card-title" id="totalBaiBaoMsg">(Tổng cộng có ... bài báo đã được nộp)</h3>
+
+          <canvas id="donutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+          <div class="pagination">
+            <button id="previousPageBtn1" class="btn btn-primary" style="display: none">Trang trước</button>
+            <div class="pagination-nav">
+              <button id="nextPageBtn1" class="btn btn-primary" style="display: none">Trang tiếp theo</button>
+            </div>
+          </div>
+          <!-- Thêm thẻ p để chứa thông báo -->
+
+        </div>
+        <!-- /.card-body -->
+      </div>
+
+      <!-- /.card -->
+      <!-- PIE CHART -->
+      <div class="card card-danger" id="card2">
+        <div class="card-body">
+          <h3 class="card-title" id="totalUserMsg"></h3>
+
+          <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+          <div class="pagination">
+
+            <button id="previousPageBtn2" class="btn btn-primary" style="display: none">Trang trước</button>
+
+            <div class="pagination-nav">
+              <button id="nextPageBtn2" class="btn btn-primary" style="display: none">Trang tiếp theo</button>
+            </div>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
+    <script>
+
+      if (_quyen == "Quyền cao nhất") {
+        document.getElementById("card1").style.display = "block";
+        document.getElementById("card2").style.display = "block";
+      } else {
+        document.getElementById("card1").style.display = "none";
+        document.getElementById("card2").style.display = "none";
+      }
+    </script>
+    <!-- /.col (LEFT) -->
+    <div class="col-md-6">
+      <!-- LINE CHART -->
+      <div class="card card-info" style=" display: none; ">
+        <div class="card-header">
+          <h3 class="card-title">Biểu đồ đường (Đợi cập nhật tiếp theo)</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart">
+            <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            <div class="pagination">
+
+              <button id="previousPageBtn3" class="btn btn-primary">Trang trước</button>
+
+              <div class="pagination-nav">
+                <button id="nextPageBtn3" class="btn btn-primary">Trang tiếp theo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+      <!-- BAR CHART -->
+      <div class="card card-success" style=" display: none; ">
+        <div class="card-header">
+          <h3 class="card-title">Bar Chart</h3>
+
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart">
+            <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            <div class="pagination">
+
+              <button id="previousPageBtn4" class="btn btn-primary">Trang trước</button>
+
+              <div class="pagination-nav">
+                <button id="nextPageBtn4" class="btn btn-primary">Trang tiếp theo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+      <!-- STACKED BAR CHART -->
+      <div class="card card-success">
+        <div class="card-body">
+          <h3 class="card-title">Thống kê số bài báo theo trạng thái</h3>
+
+          <div class="chart">
+            <canvas id="stackedBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            <div class="pagination">
+
+              <button id="previousPageBtn5" class="btn btn-primary" style="display: none">Trang trước</button>
+
+              <div class="pagination-nav">
+                <button id="nextPageBtn5" class="btn btn-primary" style="display: none">Trang tiếp theo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+
+      <!-- STACKED BAR CHART THỂ LOẠI -->
+      <div class="card card-success">
+        <div class="card-body">
+          <h3 class="card-title">Thống kê số bài báo theo thể loại</h3>
+
+          <div class="chart">
+            <canvas id="stackedBarChart_Theloai" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+            <div class="pagination">
+
+              <button id="previousPageBtn6" class="btn btn-primary" style="display: none">Trang trước</button>
+
+              <div class="pagination-nav">
+                <button id="nextPageBtn6" class="btn btn-primary" style="display: none">Trang tiếp theo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
+    <!-- /.col (RIGHT) -->
+  </div>
+  <!-- /.row -->
+</section>
+<!-- /.content -->
+<!-- /.content-wrapper -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    function hideAllCharts() {
+      document.getElementById("donutChart").style.display = "none";
+      document.getElementById("pieChart").style.display = "none";
+      document.getElementById("stackedBarChart").style.display = "none";
+      document.getElementById("stackedBarChart_Theloai").style.display = "none";
+    }
+    hideAllCharts();
+
+    function randomColor(count) {
+      var colors = [];
+      var letters = '0123456789ABCDEF';
+      for (var i = 0; i < count; i++) {
+        var color = '#';
+        for (var j = 0; j < 6; j++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        colors.push(color);
+      }
+      return colors;
+    };
+
+    /* ChartJS
+     * -------
+     * Here we will create a few charts using ChartJS
+     */
+
+    //--------------
+    //- AREA CHART -
+    //--------------
+
+    // Get context with jQuery - using jQuery's .get() method.
+    var areaChartCanvas = $('#areaChart').get(0).getContext('2d')
+
+    var areaChartData = {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [
+        {
+          label: 'Digital Goods',
+          backgroundColor: 'rgba(60,141,188,0.9)',
+          borderColor: 'rgba(60,141,188,0.8)',
+          pointRadius: false,
+          pointColor: '#3b8bba',
+          pointStrokeColor: 'rgba(60,141,188,1)',
+          pointHighlightFill: '#fff',
+          pointHighlightStroke: 'rgba(60,141,188,1)',
+          data: [28, 48, 40, 19, 86, 27, 90]
+        },
+        {
+          label: 'Electronics',
+          backgroundColor: 'rgba(210, 214, 222, 1)',
+          borderColor: 'rgba(210, 214, 222, 1)',
+          pointRadius: false,
+          pointColor: 'rgba(210, 214, 222, 1)',
+          pointStrokeColor: '#c1c7d1',
+          pointHighlightFill: '#fff',
+          pointHighlightStroke: 'rgba(220,220,220,1)',
+          data: [65, 59, 80, 81, 56, 55, 40]
+        },
+      ]
+    }
+
+    var areaChartOptions = {
+      maintainAspectRatio: false,
+      responsive: true,
+      legend: {
+        display: false
+      },
+      scales: {
+        xAxes: [{
+          gridLines: {
+            display: false,
+          }
+        }],
+        yAxes: [{
+          gridLines: {
+            display: false,
+          }
+        }]
+      }
+    }
+
+    // This will get the first returned node in the jQuery collection.
+    new Chart(areaChartCanvas, {
+      type: 'line',
+      data: areaChartData,
+      options: areaChartOptions
+    })
+
+    //-------------
+    //- LINE CHART -
+    //--------------
+    var lineChartCanvas = $('#lineChart').get(0).getContext('2d')
+    var lineChartOptions = $.extend(true, {}, areaChartOptions)
+    var lineChartData = $.extend(true, {}, areaChartData)
+    lineChartData.datasets[0].fill = false;
+    lineChartData.datasets[1].fill = false;
+    lineChartOptions.datasetFill = false
+
+    var lineChart = new Chart(lineChartCanvas, {
+      type: 'line',
+      data: lineChartData,
+      options: lineChartOptions
+    })
+
+    var timeline = document.getElementById("timeline");
+    timeline.addEventListener("change", function () {
+      hideAllCharts();
+      getData();
+    });
+
+    function getData() {
+      drawDonutChart();
+      drawPieChart();
+      drawStackedBarChart();
+      drawStackedBarChart_Theloai();
+    }
+
+    //-------------
+    //- DONUT CHART -
+    //-------------
+    // Get context with jQuery - using jQuery's .get() method.
+    var currentChart;
+    function drawDonutChart() {
+      fetch('https://localhost:44364/api/ThongKe/Get-DonViCongTac_ThongKe?dtString=' + timeline.value, {
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          const itemsPerPage = 15;
+          const totalPages = Math.ceil(data.labels.length / itemsPerPage);
+          let currentPage = 1;
+
+          const displayCurrentPageData = () => {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentPageLabels = data.labels.slice(startIndex, endIndex);
+            const currentPageData = data.data.slice(startIndex, endIndex);
+
+            const backgroundColors = randomColor(currentPageLabels.length);
+            const donutData = {
+              labels: currentPageLabels,
+              datasets: [
+                {
+                  data: currentPageData,
+                  backgroundColor: backgroundColors,
+                }
+              ]
+            };
+
+            var donutChartCanvas = $('#donutChart').get(0).getContext('2d');
+            var donutOptions = {
+              maintainAspectRatio: false,
+              responsive: true,
+            };
+            if (currentChart) {
+              currentChart.destroy();
+            }
+            // Vẽ biểu đồ mới
+            currentChart = new Chart(donutChartCanvas, {
+              type: 'doughnut',
+              data: donutData,
+              options: donutOptions
+            });
+
+            // show donutChart
+            document.getElementById("donutChart").style.display = "block";
+            document.getElementById("previousPageBtn1").style.display = currentPage == 1 ? "none" : "unset";
+            document.getElementById("nextPageBtn1").style.display = currentPage == totalPages ? "none" : "unset";
+          };
+          displayCurrentPageData();
+          if (totalPages > 1) {
+            $('#previousPageBtn1').click(() => {
+              if (currentPage > 1) {
+                currentPage--;
+                displayCurrentPageData();
+              }
+            });
+
+            $('#nextPageBtn1').click(() => {
+              if (currentPage < totalPages) {
+                currentPage++;
+                displayCurrentPageData();
+              }
+            });
+          } else {
+            document.getElementById("previousPageBtn1").style.display = "none";
+            document.getElementById("nextPageBtn1").style.display = "none";
+          }
+        })
+        .catch(error => console.error(error));
+      $.ajax({
+        url: 'https://localhost:44364/api/ThongKe/Get-Total-BaiBao?quyen=' + sessionStorage.getItem("Quyen") + '&khoa=' + sessionStorage.getItem("Khoa") + '&dtString=' + timeline.value,
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        },
+        success: function (data) {
+          var totalBaiBao = data; // Tổng số bài báo đã được nộp
+          var message = `Thống kê số bài báo theo Khoa - Viện (Tổng cộng có ${totalBaiBao} bài báo đã được nộp)`;
+          // Thêm thông báo vào thẻ p
+          $('#totalBaiBaoMsg').text(message);
+        },
+        error: function (error) {
+          console.error(error);
+        }
+      });
+    }
+
+
+
+    //-------------
+    //- PIE CHART -
+    //-------------
+    var currentChart1;
+    function drawPieChart()
+    {
+      fetch('https://localhost:44364/api/ThongKe/Get-UserID_ThongKe?dtString=' + timeline.value, {
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          const itemsPerPage = 15;
+          const totalPages = Math.ceil(data.labels.length / itemsPerPage);
+          let currentPage = 1;
+          const displayCurrentPageData = () => {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentPageLabels = data.labels.slice(startIndex, endIndex);
+            const currentPageData = data.data.slice(startIndex, endIndex);
+
+            const backgroundColors = randomColor(currentPageLabels.length);
+            const pieData = {
+              labels: currentPageLabels,
+              datasets: [
+                {
+                  data: currentPageData,
+                  backgroundColor: backgroundColors,
+                }
+              ]
+            };
+
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d');
+            var pieOptions = {
+              maintainAspectRatio: false,
+              responsive: true,
+            };
+
+            if (currentChart1) {
+              currentChart1.destroy();
+            }
+            // Vẽ biểu đồ mới
+            currentChart1 =
+              new Chart(pieChartCanvas, {
+                type: 'pie',
+                data: pieData,
+                options: pieOptions
+              });
+
+            // show pieChart
+            document.getElementById("pieChart").style.display = "block";
+            document.getElementById("previousPageBtn2").style.display = currentPage == 1 ? "none" : "unset";
+            document.getElementById("nextPageBtn2").style.display = currentPage == totalPages ? "none" : "unset";
+          };
+
+          displayCurrentPageData();
+          if (totalPages > 1) {
+            $('#previousPageBtn2').click(() => {
+              if (currentPage > 1) {
+                currentPage--;
+                displayCurrentPageData();
+              }
+            });
+
+            $('#nextPageBtn2').click(() => {
+              if (currentPage < totalPages) {
+                currentPage++;
+                displayCurrentPageData();
+              }
+            });
+          } else {
+            document.getElementById("previousPageBtn2").style.display = "none";
+            document.getElementById("nextPageBtn2").style.display = "none";
+          }
+        })
+        .catch(error => console.error(error));
+
+      $.ajax({
+        url: 'https://localhost:44364/api/ThongKe/Get-TotalUserID_ThongKe?quyen=' + sessionStorage.getItem("Quyen") + '&khoa=' + sessionStorage.getItem("Khoa") + '&dtString=' + timeline.value,
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        },
+        success: function (data) {
+          var totalUsers = data; // Tổng số người dùng
+          var message = `Thống kê số user đã khai báo theo Khoa - Viện (Tổng cộng có ${totalUsers} người dùng)`;
+          // Thêm thông báo vào thẻ p
+          $('#totalUserMsg').text(message);
+        },
+        error: function (error) {
+          console.error(error);
+        }
+      });
+    }
+    // Get context with jQuery - using jQuery's .get() method.
+
+    //-------------
+    //- BAR CHART -
+    //-------------
+    var barChartCanvas = $('#barChart').get(0).getContext('2d')
+    var barChartData = $.extend(true, {}, areaChartData)
+    var temp0 = areaChartData.datasets[0]
+    var temp1 = areaChartData.datasets[1]
+    barChartData.datasets[0] = temp1
+    barChartData.datasets[1] = temp0
+
+    var barChartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      datasetFill: false
+    }
+
+    new Chart(barChartCanvas, {
+      type: 'bar',
+      data: barChartData,
+      options: barChartOptions
+    })
+
+    //---------------------
+    // Lấy dữ liệu từ API
+    var currentChart2;
+    function drawStackedBarChart() {
+      fetch('https://localhost:44364/api/ThongKe/Get-ThongKe_TrangThai?quyen=' + sessionStorage.getItem("Quyen") + '&khoa=' + sessionStorage.getItem("Khoa") + '&dtString=' + timeline.value, {
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          const itemsPerPage = 15;
+          const totalPages = Math.ceil(data.length / itemsPerPage);
+          let currentPage = 1;
+          const displayCurrentPageData = () => {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentPageData = data.slice(startIndex, endIndex);
+
+            const labels = currentPageData.map(item => item.donViCongTac);
+            const hoanThanhData = currentPageData.map(item => item.hoanThanh);
+            const dangDoiDuyetData = currentPageData.map(item => item.dangDoiDuyet);
+
+            const stackedBarChartData = {
+              labels: labels,
+              datasets: [
+                {
+                  label: 'Hoàn Thành',
+                  data: hoanThanhData,
+                  backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                  stack: 'stack'
+                },
+                {
+                  label: 'Đang đợi duyệt',
+                  data: dangDoiDuyetData,
+                  backgroundColor: 'rgba(153, 102, 255, 0.8)',
+                  stack: 'stack'
+                }
+              ]
+            };
+
+            var stackedBarChartCanvas = $('#stackedBarChart').get(0).getContext('2d');
+            var stackedBarChartOptions = {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                xAxes: [{
+                  stacked: true
+                }],
+                yAxes: [{
+                  stacked: true
+                }]
+              }
+            };
+            if (currentChart2) {
+              currentChart2.destroy();
+            }
+            // Vẽ biểu đồ mới
+            currentChart2 =
+              new Chart(stackedBarChartCanvas, {
+                type: 'bar',
+                data: stackedBarChartData,
+                options: stackedBarChartOptions
+              });
+
+            // show stackedBarChart
+            document.getElementById("stackedBarChart").style.display = "block";
+            document.getElementById("previousPageBtn5").style.display = currentPage == 1 ? "none" : "unset";
+            document.getElementById("nextPageBtn5").style.display = currentPage == totalPages ? "none" : "unset";
+          };
+          displayCurrentPageData();
+          if (totalPages > 1) {
+            $('#previousPageBtn5').click(() => {
+              if (currentPage > 1) {
+                currentPage--;
+                displayCurrentPageData();
+              }
+            });
+
+            $('#nextPageBtn5').click(() => {
+              if (currentPage < totalPages) {
+                currentPage++;
+                displayCurrentPageData();
+              }
+            });
+          } else {
+            document.getElementById("previousPageBtn5").style.display = "none";
+            document.getElementById("nextPageBtn5").style.display = "none";
+          }
+        })
+        .catch(error => console.error(error));
+    }
+
+    // Lấy dữ liệu từ API the loai
+    var currentChart3;
+    function drawStackedBarChart_Theloai() {
+      fetch('https://localhost:44364/api/ThongKe/Get-ThongKe_Theloai?quyen=' + sessionStorage.getItem("Quyen") + '&khoa=' + sessionStorage.getItem("Khoa") + '&dtString=' + timeline.value, {
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          const itemsPerPage = 15;
+          const totalPages = Math.ceil(data.length / itemsPerPage);
+          let currentPage = 1;
+          const displayCurrentPageData = () => {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentPageData = data.slice(startIndex, endIndex);
+
+            const labels = currentPageData.map(item => item.donViCongTac);
+            const SeminarData = currentPageData.map(item => item.seminar);
+            const NCKH_TruongData = currentPageData.map(item => item.nckH_Truong);
+
+            const HDSVData = currentPageData.map(item => item.hdsv);
+            const SV_KKData = currentPageData.map(item => item.sV_KK);
+            const HDSV_vietBCKHData = currentPageData.map(item => item.hdsV_vietBCKH);
+            const HDSV_BoTPData = currentPageData.map(item => item.hdsV_BoTP);
+
+            const stackedBarChartData_TL = {
+              labels: labels,
+              datasets: [
+                {
+                  label: 'Seminar',
+                  data: SeminarData,
+                  backgroundColor: '#f76e6e',
+                  stack: 'stack'
+                },
+                {
+                  label: 'HD đề tài nghiệm thu',
+                  data: HDSVData,
+                  backgroundColor: '#007bff',
+                  stack: 'stack'
+                },
+                {
+                  label: 'SV đạt giải KK',
+                  data: SV_KKData,
+                  backgroundColor: 'yellow',
+                  stack: 'stack'
+                },
+                {
+                  label: 'HDSV đăng trên kỷ yếu',
+                  data: HDSV_vietBCKHData,
+                  backgroundColor: '#e8128f',
+                  stack: 'stack'
+                },
+                {
+                  label: 'HD đề tài Bộ,TP',
+                  data: HDSV_BoTPData,
+                  backgroundColor: '#868584',
+                  stack: 'stack'
+                },
+                {
+                  label: 'NCKH cấp trường',
+                  data: NCKH_TruongData,
+                  backgroundColor: '#bfff79',
+                  stack: 'stack'
+                }
+              ]
+            };
+
+            var stackedBarChart_TLCanvas = $('#stackedBarChart_Theloai').get(0).getContext('2d');
+            var stackedBarChart_TLOptions = {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                xAxes: [{
+                  stacked: true
+                }],
+                yAxes: [{
+                  stacked: true
+                }]
+              }
+            };
+            if (currentChart3) {
+              currentChart3.destroy();
+            }
+            // Vẽ biểu đồ mới
+            currentChart3 =
+              new Chart(stackedBarChart_TLCanvas, {
+                type: 'bar',
+                data: stackedBarChartData_TL,
+                options: stackedBarChart_TLOptions
+              });
+
+            // show stackedBarChart_Theloai
+            document.getElementById("stackedBarChart_Theloai").style.display = "block";
+            document.getElementById("previousPageBtn6").style.display = currentPage == 1 ? "none" : "unset";
+            document.getElementById("nextPageBtn6").style.display = currentPage == totalPages ? "none" : "unset";
+          };
+          displayCurrentPageData();
+          if (totalPages > 1) {
+            $('#previousPageBtn6').click(() => {
+              if (currentPage > 1) {
+                currentPage--;
+                displayCurrentPageData();
+              }
+            });
+
+            $('#nextPageBtn6').click(() => {
+              if (currentPage < totalPages) {
+                currentPage++;
+                displayCurrentPageData();
+              }
+            });
+          }
+        })
+        .catch(error => console.error(error));
+    }
+
+
+    // ***************** SEARCH DATA *****************
+
+  });</script>

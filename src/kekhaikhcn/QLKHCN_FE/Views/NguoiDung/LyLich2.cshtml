@@ -1,0 +1,932 @@
+﻿@{
+    ViewBag.Title = "LyLich2";
+    Layout = "~/Views/Shared/_LayoutUserPage.cshtml";
+}
+
+<div class="all" style="background: #fff;">
+    <div class="w3-bar w3-black" style="margin-bottom: 2%; background-color: #17a2b8!important; border-radius: .25rem; box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);">
+        <button class="w3-bar-item w3-button tablink w3-red" onclick="openCity(event, 'ttcn')">Thông tin cá nhân</button>
+        <button class="w3-bar-item w3-button tablink" onclick="openCity(event, 'qtdt')">Quá trình đào tạo</button>
+        <button class="w3-bar-item w3-button tablink" onclick="openCity(event, 'qtct')">Quá trình công tác</button>
+        <button class="w3-bar-item w3-button tablink" onclick="openCity(event, 'ctcb')">Công trình công bố</button>
+        <button class="w3-bar-item w3-button tablink" onclick="openCity(event, 'khac')">Khác</button>
+    </div>
+    <style>
+        .w3-container, .w3-panel {
+             padding: 0; 
+        }
+        
+        .table {
+            background-color: #fff;
+        }
+        
+        .checkbox-group {
+            display: inline-block;
+        }
+
+        .form-check {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        #wrapper {
+            width: 60%;
+            margin: 0% auto;
+        }
+
+        #userinfor td:hover {
+            background-color: #dddddd;
+        }
+
+        #address td:hover {
+            background-color: #dddddd;
+        }
+
+        #useremail td:hover {
+            background-color: #dddddd;
+        }
+
+        #contact td:hover {
+            background-color: #dddddd;
+        }
+
+        #userinfor th {
+            background-color: #dddddd;
+        }
+
+        #address th {
+            background-color: #dddddd;
+        }
+
+        #useremail th {
+            background-color: #dddddd;
+        }
+
+        #contact th {
+            background-color: #dddddd;
+        }
+
+        input {
+            border-width: 0px;
+            border: none;
+        }
+    </style>
+    <div id="ttcn" class="w3-container w3-display-container profile">
+        <div id="infor">
+            <table class="table" id="userinfor">
+            </table>
+        </div>
+    </div>
+    <div id="qtdt" class="w3-container w3-display-container profile" style="display:none">
+        <div id="infor">
+            <table id="lylich" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">
+                            Bậc đào tạo
+                        </th>
+                        <th style="text-align: center;">
+                            Nơi đào tạo
+                        </th>
+                        <th style="text-align: center;">
+                            Chuyên môn
+                        </th>
+                        <th style="text-align: center;">
+                            Năm tốt nghiệp
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <script>
+            var linkapi = "https://localhost:44364/api/LyLich/Get-all";
+            function Get_info(callback) {
+                fetch(linkapi)
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(callback)
+            }
+            function renderGet_info(users) {
+                var tab = document.querySelector('#lylich');
+
+            }</script>
+    </div>
+
+    <div id="qtct" class="w3-container w3-display-container profile" style="display:none">
+        <div id="infor">
+            <table id="lylichct" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">
+                            Thời gian
+                        </th>
+                        <th style="text-align: center;">
+                            Vị trí công tác
+                        </th>
+                        <th style="text-align: center;">
+                            Tổ chức công tác
+                        </th>
+                        <th style="text-align: center;">
+                            Địa chỉ Tổ chức
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="ctcb" class="w3-container w3-display-container profile" style="display:none">
+        <div id="infor">
+            <table id="lylichctcb" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">
+                            STT
+                        </th>
+                        <th style="text-align: center;">
+                            Tên công trình
+                        </th>
+                        <th style="text-align: center;">
+                            Là tác giả hoặc đồng tác giả công trình
+                        </th>
+                        <th style="text-align: center;">
+                            Nơi công bố
+                        </th>
+                        <th style="text-align: center;">
+                            Năm công bố
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="khac" class="w3-container w3-display-container profile" style="display:none">
+        <div id="slvb">
+            <div id="infor">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Số lượng văn bằng</h3>
+                    </div>
+                    <div class="card-body">
+                        <table id="lylichslvb" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">
+                                        TT
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Tên và nội dung văn bằng
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Năm cấp
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="sct">
+            <div id="infor">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Số công trình</h3>
+                    </div>
+                    <div class="card-body">
+                        <table id="lylichsct" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">
+                                        TT
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Tên công trình
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Hình thức, quy mô, địa chỉ áp dụng
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Thời gian
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="cthtg">
+            <div id="infor">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Các đề tài/đề án, dự án, nhiệm vụ khác đã chủ trì hoặc tham gia</h3>
+                    </div>
+                    <div class="card-body">
+                        <table id="lylichcthtg" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">
+                                        Tên đề tài/đề án, dự án, nhiệm vụ khác đã chủ trì hoặc tham gia
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Thời gian
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Thuộc chương trình
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Tình trạng đề tài
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="gt">
+            <div id="infor">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Giải thưởng</h3>
+                    </div>
+                    <div class="card-body">
+                        <table id="lylichgt" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">
+                                        TT
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Hình thức và nội dung trao giải
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Năm tặng thưởng
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="tt">
+            <div id="infor">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Thành tựu</h3>
+                    </div>
+                    <div class="card-body">
+                        <table id="lylichtt" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">
+                                        TT
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Tên thành tựu
+                                    </th>
+                                    <th style="text-align: center;">
+                                        Năm đạt thành tựu
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="display: flex; justify-content: flex-end; align-items: flex-end; padding: 0.01em 16px;">
+        <button type="submit" class="btn btn-block btn-primary" style="margin-right:1%; font-family: Arial, Helvetica, sans-serif;" id="publish-button">
+        </button>
+        <button type="submit" class="btn btn-block btn-success" onclick="update()" style="margin-right:1%; font-family: Arial, Helvetica, sans-serif;">
+            Lưu thay đổi
+        </button>
+        <button type="submit" class="btn btn-block btn-info" onclick="word()" style="font-family: Arial, Helvetica, sans-serif;">
+            <i class="fa fa-download"></i> Tải lý lịch
+        </button>
+    </div>
+
+    <!--tab-->
+    <script>
+        function openCity(evt, proFile) {
+          var i, x, tablinks;
+          x = document.getElementsByClassName("profile");
+          for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+          }
+          tablinks = document.getElementsByClassName("tablink");
+          for (i = 0; i < x.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+          }
+          document.getElementById(proFile).style.display = "block";
+          evt.currentTarget.className += " w3-red";
+        }
+    </script>
+
+    <script>
+        var nguoidung;
+        var token = "";
+        var linkapi = 'https://localhost:44364/api/NguoiDung/Get-user-id?input=' + _idUser;
+        //        apikhcn.hutech.edu.vn/api/NguoiDung/Get-user-id?input=' + _idUser;
+
+        var linkid = 'https://localhost:44364/api/NguoiDung/GetID?id=' + _idUser;
+        var linkidLyLich = 'https://localhost:44364/api/LyLich/GetID?id=' + _idUser;
+        var linklylich = 'https://localhost:44364/api/LyLich/Get-LyLichData?id=' + _idUser + '&type=';
+        var linkword = 'https://localhost:44364/api/LyLich/Word?id=' + _idUser;
+
+        function Start() {
+            Get_info(renderGet_info);
+            Get_lylich(linklylich + 'QTDT', 'lylich');
+            Get_lylich(linklylich + 'QTCT', 'lylichct');
+            Get_lylich(linklylich + 'CTCB', 'lylichctcb');
+            Get_lylich(linklylich + 'CTHTG', 'lylichcthtg');
+            Get_lylich(linklylich + 'GT', 'lylichgt');
+            Get_lylich(linklylich + 'SCT', 'lylichsct');
+            Get_lylich(linklylich + 'SLVB', 'lylichslvb');
+            Get_lylich(linklylich + 'TT', 'lylichtt');
+        }
+        Start();
+
+        //Data LyLich into table
+        function Get_lylich(link, idTable) {
+            var checkbox = document.querySelector('#' + idTable + ' tbody');
+            checkbox.innerHTML = '';
+
+            fetch(link,
+                {
+                    headers: {
+                        'Authorization': 'Bearer ' + _token,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(users => {
+                    console.log(users);
+                    var htmls_Data = users.data.map(function (user) {
+                        var htmls = user.data.map(function (cell) {
+                            return `<td><input type="text" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;" value="${cell}"></td>`;
+                        });
+                        return '<tr>' + htmls.join('') + '</tr>';
+                    });
+                    var htmls_Create = '<tr>';
+                    for (let i = 0; i < users.col; i++) {
+                        htmls_Create += '<td><input class="qtdtthem" type="text" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;" value=""></td>';
+                    }
+                    htmls_Create += '</tr>';
+                    checkbox.innerHTML += htmls_Data.join('') + htmls_Create;
+                });
+        }
+
+        function check(checkboxYes) {
+
+            var checkbox_Nam = document.querySelector("#Nam");
+            var checkbox_Nu = document.querySelector("#Nu");
+
+            if (checkboxYes === checkbox_Nam) {
+                checkbox_Nu.checked = !checkbox_Nam.checked;
+            }
+            else if (checkboxYes === checkbox_Nu) {
+                checkbox_Nam.checked = !checkbox_Nu.checked;
+            }
+        }
+
+        function Get_info(callback) {
+            fetch(linkapi,
+                {
+                    headers: {
+                        'Authorization': 'Bearer ' + _token,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(callback)
+        }
+        function renderGet_info(users) {
+            var checkbox = document.querySelector('#userinfor');
+
+            var gioitinhnu = "unchecked";
+            var gioitinhnam = "unchecked";
+
+            var GS = "unchecked";
+            var PGS = "unchecked";
+            var TS = "unchecked";
+            var ThS = "unchecked";
+            var KS = "unchecked";
+            var CN = "unchecked";
+            var BS = "unchecked";
+
+            var htmls = users.map(function (user) {
+                if (user.gioiTinh == "1") {
+                    gioitinhnam = "checked";
+
+                } else {
+                    gioitinhnu = "checked";
+                }
+                if (user.chucDanh == "GS") {
+                    GS = "checked";
+                } else if (user.chucDanh == "PGS") {
+                    PGS = "checked";
+                } else if (user.chucDanh == "TS") {
+                    TS = "checked";
+                } else if (user.chucDanh == "ThS") {
+                    ThS = "checked";
+                } else if (user.chucDanh == "KS") {
+                    KS = "checked";
+                } else if (user.chucDanh == "CN") {
+                    CN = "checked";
+                } else if (user.chucDanh == "BS") {
+                    BS = "checked";
+                }
+                
+                setPublishButton(user.congKhai);
+
+                return `<tr>
+                                                                            <th>Họ tên</th>
+                                                                            <td><input id="info_hoTen" type="text" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%; border-style: hidden;"
+                                                                                    value="${user.hoTen}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                        <th>Giới tính</th>
+
+                                                            <td id="info_gioiTinh">
+                                                            <label for="Nam"><input type="radio" id="Nam" class="checkbox" onchange="check(this)" value="1" name="gioitinhnam" ${gioitinhnam}>Nam</label>
+                                                            <label for="Nữ"><input type="radio" id="Nu" class="checkbox" onchange="check(this)" value="0" name="gioitinhnu" ${gioitinhnu}>Nữ</label>
+                                                        </td>
+                                                    </tr>
+                                                                        <tr>
+                                                                            <th>Ngày sinh</th>
+                                                                            <td> <input id="info_ngaySinh" type="date" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                  value="${user.ngaySinh ? user.ngaySinh.split('T')[0] : ''}"  ></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Số chứng minh</th>
+                                                                            <td> <input id="info_cccd" type="text" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.cccd}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Chức danh khoa học/học vị</th>
+                                                                            <td id="info_chucDanh">
+                                                                                <label for="GS"> <input type="checkbox" value="GS" id="GS" class="checkbox" name="GS" ${GS}>GS</label>
+                                                                                <label for="PGS"><input type="checkbox" value="PGS" id="PGS" class="checkbox" name="PGS" ${PGS}>PGS</label>
+                                                                                <label for="TS"> <input type="checkbox" value="TS"  id="TS" class="checkbox" name="TS" ${TS}>TS</label>
+                                                                                <label for="ThS"><input type="checkbox" value="ThS" id="ThS" class="checkbox" name="ThS" ${ThS}>ThS</label>
+                                                                                <label for="KS"> <input type="checkbox" value="KS" id="KS" class="checkbox" name="KS" ${KS}>KS</label>
+                                                                                <label for="CN"> <input type="checkbox" value="CN" id="CN" class="checkbox" name="CN" ${CN}>CN</label>
+                                                                                <label for="BS"> <input type="checkbox" value="BS" id="BS" class="checkbox" name="BS" ${BS}>BS</label>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Chức vụ</th>
+                                                                            <td> <input id="info_chucVu" type="text" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.chucVu}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Đơn vị công tác</th>
+
+                                                                            <td> <input id="info_donViCongTac" type="text" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.donViCongTac}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Phòng ban</th>
+
+                                                                            <td> <input id="info_phongBan" type="text" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.phongBan}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Địa chỉ</th>
+                                                                            <td> <input id="info_diaChi" type="text" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.diaChi}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Tỉnh thành</th>
+                                                                            <td> <input type="text" id="info_tinhThanh" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.tinhThanh}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Email chính</th>
+
+                                                                            <td> <input id="info_emailChinh" type="email" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.emailChinh}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Email thay thế</th>
+
+                                                                            <td> <input type="email" id="info_emailThayThe" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.emailThayThe}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Số điện thoại cơ quan</th>
+
+                                                                            <td> <input type="text"  id="info_sdtCoQuan" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.sdtCoQuan}"></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>Số điện thoại di động</th>
+
+                                                                            <td> <input type="text" id="info_sdtdd" style="padding: 1%;padding-top: 1%; padding-bottom: 1%; width: 95%;"
+                                                                                    value="${user.sdtdd}"></td>
+                                                                        </tr>
+                                                                        `;
+            });
+            checkbox.innerHTML = htmls.join('');
+        }
+        //lay du lieu tu bang chuyen thanh chuoi de luu vao csdl
+        function chuoi(tenbang) {
+            var qtdt = "";
+            var table = document.querySelector(tenbang);
+
+            var rows = table.rows;
+
+            for (var i = 0; i < rows.length; i++) {
+                var inputs = rows[i].querySelectorAll('input');
+                var s = "";
+                var emptyCount = 0; // Biến đếm số lượng input trống trong dòng
+
+                inputs.forEach(function (input) {
+                    if (input.value.trim() === "") {
+                        emptyCount++;
+                    }
+                    s += input.value + " - ";
+                });
+
+                if (emptyCount !== inputs.length) {
+                    // Chỉ thực hiện khi không có tất cả các input trống trong dòng
+                    qtdt += s + "; ";
+                }
+            }
+            return qtdt;
+        }
+        function getCheckedCheckboxValue(tentd) {
+            var table_info = document.querySelector(tentd);
+            var checkboxes = table_info.getElementsByClassName("checkbox");
+
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    return checkboxes[i].value;
+                }
+            }
+            return null; // Trả về null nếu không có checkbox nào được chọn
+        }
+        async function layDuLieuNguoiDung(link) {
+            try {
+                const response = await fetch(link, {
+                    headers: {
+                        'Authorization': 'Bearer ' + _token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    return data;
+                } else {
+                    console.log('Lỗi khi lấy dữ liệu người dùng:', response.status, response.statusText);
+                    return null;
+                }
+            } catch (error) {
+                console.log('Lỗi khi gửi yêu cầu lấy dữ liệu người dùng:', error);
+                return null;
+            }
+        }
+        //ham so sanh dl cu va dl moi
+        function Khac(dataNguoiDungNew, dataNguoiDung) {
+            console.log(JSON.stringify(dataNguoiDung));
+            console.log(JSON.stringify(dataNguoiDungNew));
+            var obj1 = JSON.parse(JSON.stringify(dataNguoiDung));
+            var obj2 = JSON.parse(JSON.stringify(dataNguoiDungNew));
+
+            // Xóa trường "quyen" trong đối tượng (nếu có)
+            delete obj1.quyen;
+            delete obj2.quyen;
+
+            // So sánh hai đối tượng đã chỉnh sửa
+            return JSON.stringify(obj1) != JSON.stringify(obj2);
+
+        }
+
+        function kiemTraThayDoi(bodyNguoiDung, link) {
+            return layDuLieuNguoiDung(link)
+                .then(dataNguoiDung => {
+                    if (dataNguoiDung !== null) {
+                        const kt = Khac(bodyNguoiDung, dataNguoiDung);
+                        return kt;
+                    } else {
+                        alert("Lỗi khi lấy dữ liệu người dùng");
+                        return false;
+                    }
+                })
+                .catch(error => {
+                    alert("Lỗi khi lấy dữ liệu người dùng: " + error);
+                    return false;
+                });
+        }
+        
+        function setPublishButton(congKhai) {
+            if (!congKhai) {
+                document.getElementById("publish-button").innerText = "Công khai";
+                document.getElementById("publish-button").setAttribute("onclick", "publish()");
+            } else {
+                document.getElementById("publish-button").innerText = "Hủy công khai";
+                document.getElementById("publish-button").setAttribute("onclick", "unpublish()");
+            }
+        }
+        
+        function publish() {
+            Swal.fire({
+              title: "Công khai hồ sơ cá nhân",
+              html: "Việc này sẽ công khai các thông tin sau: <b>Họ tên, Giới tính, Chức vụ</b>. Bạn có chắc chắn muốn công khai hồ sơ không?",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Xác nhận",
+              cancelButtonText: "Hủy",
+              showLoaderOnConfirm: true,
+              preConfirm: async () => {
+                try {
+                  const url = 'https://localhost:44364/api/NguoiDung/Publish?IDUser=' + _idUser + '&congKhai=true';
+                  const response = await fetch(url, {
+                      method: 'POST',
+                      headers: {
+                          'Authorization': 'Bearer ' + _token,
+                          'Content-Type': 'application/json'
+                      }
+                  });
+                  if (!response.ok) {
+                      return Swal.showValidationMessage(`
+                          ${JSON.stringify(await response.json())}
+                      `);
+                  }
+                  return response.json();
+                } catch (error) {
+                  console.log(error);
+                  Swal.showValidationMessage(`Có lỗi xảy ra trong quá trình công khai hồ sơ: ${error}`);
+                }
+              },
+              allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+              if (result.isConfirmed) {
+                setPublishButton(true);
+                Swal.fire("Công khai hồ sơ cá nhân thành công");
+              }
+            });
+        }
+        
+        function unpublish() {
+            Swal.fire({
+              title: "Hủy công khai",
+              text: "Việc này sẽ ẩn thông tin hồ sơ cá nhân của bạn. Bạn có muốn tiếp tục không không?",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Xác nhận",
+              cancelButtonText: "Hủy",
+              showLoaderOnConfirm: true,
+              preConfirm: async () => {
+                try {
+                  const url = 'https://localhost:44364/api/NguoiDung/Publish?IDUser=' + _idUser + '&congKhai=false';
+                  const response = await fetch(url, {
+                      method: 'POST',
+                      headers: {
+                          'Authorization': 'Bearer ' + _token,
+                          'Content-Type': 'application/json'
+                      }
+                  });
+                  if (!response.ok) {
+                      return Swal.showValidationMessage(`
+                          ${JSON.stringify(await response.json())}
+                      `);
+                  }
+                  return response.json();
+                } catch (error) {
+                  console.log(error);
+                  Swal.showValidationMessage(`Có lỗi xảy ra trong quá trình hủy công khai hồ sơ: ${error}`);
+                }
+              },
+              allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+              if (result.isConfirmed) {
+                setPublishButton(false);
+                Swal.fire("Hủy công khai hồ sơ cá nhân thành công");
+              }
+            });
+        }
+
+        function update() {
+            const ID = _idUser;
+            try {
+                var qtdt = chuoi('#lylich tbody');
+                var qtct = chuoi('#lylichct tbody');
+                var ctcb = chuoi('#lylichctcb tbody');
+                var slvb = chuoi('#lylichslvb tbody');
+                var sct = chuoi('#lylichsct tbody');
+                var cthtg = chuoi('#lylichcthtg tbody');
+                var gt = chuoi('#lylichgt tbody');
+                var tt = chuoi('#lylichtt tbody');
+            } catch { }
+
+            var hoten = document.querySelector('#info_hoTen').value;
+            var gioitinh = getCheckedCheckboxValue('#info_gioiTinh');
+            var ngaysinh = document.querySelector('#info_ngaySinh').value;
+            var chucdanh = getCheckedCheckboxValue('#info_chucDanh');
+            var chucvu = document.querySelector('#info_chucVu').value;
+            var tinhthanh = document.querySelector('#info_tinhThanh').value;
+            var sdtcq = document.querySelector('#info_sdtCoQuan').value;
+            var sdtdd = document.querySelector('#info_sdtdd').value;
+            var emailchinh = document.querySelector('#info_emailChinh').value;
+            var emailthaythe = document.querySelector('#info_emailThayThe').value;
+            var diachi = document.querySelector('#info_diaChi').value;
+            var phongban = document.querySelector('#info_phongBan').value;
+            var donvicongtac = document.querySelector('#info_donViCongTac').value;
+            var cccd = document.querySelector('#info_cccd').value;
+            const data = {
+                idLyLich: ID,
+                quaTrinhDaoTao: qtdt,
+                quaTrinhCongTac: qtct,
+                congTrinhCongBo: ctcb,
+                soLuongVanBang: slvb,
+                soCongTrinh: sct,
+                chuTriHoacThamGia: cthtg,
+                giaiThuong: gt,
+                thanhTuu: tt,
+                nguoiDung: null
+            }
+            const linknguoidung = "https://localhost:44364/api/NguoiDung/Update/info/";
+            const link = "https://localhost:44364/api/LyLich/Update/LyLich?IDUser=";
+
+            try {
+                kiemTraThayDoi(data, linkidLyLich)
+                    .then(hasChanges => {
+                        if (hasChanges) {
+                            options = {
+                                method: 'PUT',
+                                headers: {
+                                    'Authorization': 'Bearer ' + _token,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(data),
+                            };
+
+                            fetch(link + ID, options)
+                                .then(response => {
+                                    if (response.ok) {
+                                        alert('Cập nhật dữ liệu lý lịch thành công');
+                                        //Start();
+                                    } else {
+                                        console.log(response);
+                                    }
+                                });
+                        }
+                    })
+                    .catch(error1 => {
+                        // Xử lý lỗi
+                    });
+
+            } catch (error) {
+                console.log(error)
+            }
+            //kiem tra
+            //fetch(link + ID, options)
+            //    .then(response => {
+            //        if (response.ok) {
+            //            alert('Cập nhật dữ liệu thành công');
+            //            Start();
+            //        } else {
+            //            console.log(response);
+            //        }
+            //    });
+            const datanguoidung = {
+                IDUser: ID,
+                Password: "",
+                HoTen: hoten,
+                GioiTinh: gioitinh,
+                NgaySinh: ngaysinh,
+                CCCD: cccd,
+                ChucVu: chucvu,
+                DonViCongTac: donvicongtac,
+                PhongBan: phongban,
+                DiaChi: diachi,
+                TinhThanh: tinhthanh,
+                EmailChinh: emailchinh,
+                EmailThayThe: emailthaythe,
+                SDTCoQuan: sdtcq,
+                SDTDD: sdtdd,
+                quyen: "" // Giữ nguyên quyền hiện tại
+            };
+            try {
+                kiemTraThayDoi(datanguoidung, linkid)
+                    .then(hasChanges => {
+                        if (hasChanges) {
+                            options = {
+                                method: 'PUT',
+                                headers: {
+                                    'Authorization': 'Bearer ' + _token,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(datanguoidung),
+                            };
+
+                            fetch(linknguoidung + ID, options)
+                                .then(response => {
+                                    if (response.ok) {
+                                        alert('Cập nhật dữ liệu người dùng thành công');
+                                        Start();
+                                    } else {
+                                        console.log(response);
+                                    }
+                                });
+                        }
+                    })
+                    .catch(error1 => {
+                        // Xử lý lỗi
+                    });
+
+                //const hasChanges = kiemTraThayDoi(datanguoidung);
+                //console.log(hasChanges);
+                //if (hasChanges) {
+                //    options = {
+                //    method: 'PUT',
+                //        headers: {
+                //        'Content-Type': 'application/json'
+                //    },
+                //    body: JSON.stringify(datanguoidung),
+                //};
+
+                //fetch(linknguoidung + ID, options)
+                //    .then(response => {
+                //        if (response.ok) {
+                //            alert('Cập nhật dữ liệu người dùng thành công');
+                //            Start();
+                //        } else {
+                //            console.log(response);
+                //        }
+                //    });
+                //} else {
+                //    alert("y nguyên");
+
+                //}
+            } catch (error) {
+                console.log(error)
+            }
+
+        }
+        function word() {
+            var options = {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + _token,
+                    'Content-Type': 'application/json'
+                },
+            };
+
+            fetch(linkword, options)
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob();
+                    } else {
+                        throw new Error('Lỗi khi tải file');
+                    }
+                })
+                .then(blob => {
+                    // Tạo URL tạm thời cho file
+                    var url = URL.createObjectURL(blob);
+
+                    // Tạo một thẻ a ẩn để tải file
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'lylich.docx';
+
+                    // Kích hoạt sự kiện click để tải file
+                    link.dispatchEvent(new MouseEvent('click'));
+
+                    // Giải phóng URL tạm thời
+                    URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }</script>
+</div>

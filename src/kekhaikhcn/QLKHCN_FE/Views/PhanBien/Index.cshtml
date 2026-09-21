@@ -1,0 +1,160 @@
+﻿@{
+  ViewBag.Title = "Tạp chí Phát Triển và Hội Nhập - UEF";
+  Layout = "~/Views/Shared/_JDILayout.cshtml";
+}
+
+<div class="pagetitle">
+  <h1>Trang chủ</h1>
+</div>
+
+<section class="section dashboard">
+  <div class="row">
+    
+    <div class="col-xxl-4 col-md-4">
+      <div class="card info-card sales-card">
+
+        <div class="card-body">
+          <h5 class="card-title">Bản thảo <span>| đang xử lý</span></h5>
+
+          <div class="d-flex align-items-center">
+            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+              <i class="bi bi-pencil"></i>
+            </div>
+            <div class="ps-3">
+              <h6>2</h6>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-xxl-4 col-md-4">
+      <div class="card info-card revenue-card">
+
+        <div class="card-body">
+          <h5 class="card-title">Bản thảo <span>| đã xử lý</span></h5>
+
+          <div class="d-flex align-items-center">
+            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+              <i class="bi bi-people"></i>
+            </div>
+            <div class="ps-3">
+              <h6>12</h6>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
+  </div>
+    
+  <div class="alert alert-light border-dark alert-dismissible fade show" role="alert">
+    <h4 class="alert-heading"><i class="bi bi-info-circle me-1"></i> Dành cho tác giả</h4>
+    <p>Nhằm đáp ứng những chuẩn mực của một bài báo khoa học, Toà soạn trân trọng đề nghị Tác giả gửi bài theo thể lệ quy định của Tạp chí.</p>
+    <hr>
+    <p class="mb-0">Tác giả tham khảo về các yêu cầu chung của bản thảo, bố cục bản thảo tại đây: <a href="https://jdi.uef.edu.vn/tin-tuc/huong-dan-gui-bai-viet-1010344" target="_blank">HƯỚNG DẪN GỬI BÀI VIẾT.</a></p>
+    <button type="button" class="btn btn-primary">Gửi bài viết mới</button>
+    @* <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> *@
+  </div>
+  
+  <div class="row">
+    
+    <div class="col-lg-6">
+      
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Biên tập chuyên môn</h5>
+          
+          <p><strong>Các bản thảo mới (0)</strong></p>
+          <div class="list-group">
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo cần mời phản biện
+              <span class="badge bg-primary rounded-pill">0</span>
+            </button>
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo cần mời thêm phản biện
+              <span class="badge bg-primary rounded-pill">0</span>
+            </button>
+          </div>
+          
+          <br />
+          
+          <p><strong>Các bản thảo đang trong tiến trình (5)</strong></p>
+          <div class="list-group">
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo đang trong quá trình phản biện
+              <span class="badge bg-primary rounded-pill">2</span>
+            </button>
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo quá thời hạn gửi kết quả phản biện
+              <span class="badge bg-primary rounded-pill">1</span>
+            </button>
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo yêu cầu chỉnh sửa
+              <span class="badge bg-primary rounded-pill">2</span>
+            </button>
+          </div>
+          
+          <br />
+          
+          <p><strong>Các bản thảo đã hoàn thành (12)</strong></p>
+          <div class="list-group">
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo đang chờ quyết định
+              <span class="badge bg-primary rounded-pill">0</span>
+            </button>
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo đã quyết định
+              <span class="badge bg-primary rounded-pill">12</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+      
+    </div>
+
+    <div class="col-6">
+      
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Tác giả</h5>
+          
+          <div class="list-group">
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo cần chỉnh sửa
+              <span class="badge bg-primary rounded-pill">0</span>
+            </button>
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo cần nộp lại
+              <span class="badge bg-primary rounded-pill">0</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Phản biện</h5>
+          
+          <div class="list-group">
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các bản thảo cần phản biện
+              <span class="badge bg-primary rounded-pill">0</span>
+            </button>
+            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+              Các lời mời phản biện
+              <span class="badge bg-primary rounded-pill">0</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+</section>

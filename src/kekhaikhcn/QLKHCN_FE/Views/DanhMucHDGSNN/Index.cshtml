@@ -1,0 +1,221 @@
+﻿@{
+  ViewBag.Title = "Index";
+  Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+<div class="pagetitle" style=" display: flex; align-items: center; justify-content: space-between;">
+  <h1>DANH MỤC HỘI ĐỒNG GS NHÀ NƯỚC @ViewBag.Year</h1>
+  <div style=" display: flex; align-items: center;">
+    <a type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modal-lg-create">Thêm mới</a>
+    <input type="file" id="importFileInput" accept=".xlsx,.xls">
+    <button class="btn btn-sm btn-success" onclick="importExcel()">Import Excel</button>
+  </div>
+</div>
+
+<section class="section">
+  <div class="card">
+    <h5 class="card-title"></h5>
+
+    <div class="card-body" style="width: 100%!important; overflow-x: auto;">
+      <table id="example5" class="table table-bordered small table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>STT</th>
+            <th>Hội đồng ngành</th>
+            <th>Tên tạp chí</th>
+            <th>ISSN</th>
+            <th>Loại</th>
+            <th>Cơ quan xuất bản</th>
+            <th>Điểm</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="modal-lg-create" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Thêm mới</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <!-- form start -->
+          <form>
+            <div class="card-body">
+              <div class="form-group">
+                <div class="form-group">
+                  <label for="sttcr" class="form-label">STT:</label>
+                  <input type="text" class="form-control" id="sttcr">
+                </div>
+                <div class="form-group">
+                  <label for="hoidongnganhcr" class="form-label">Hội đồng ngành:</label>
+                  <input type="text" class="form-control" id="hoidongnganhcr">
+                </div>
+                <div class="form-group">
+                  <label for="tentapchicr" class="form-label">Tên tạp chí:</label>
+                  <input type="text" class="form-control" id="tentapchicr">
+                </div>
+                <div class="row">
+                  <div class="form-group col-6">
+                    <label for="eissncr" class="form-label">ISSN:</label>
+                    <input type="text" class="form-control" id="eissncr">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="loaicr" class="form-label">Loại:</label>
+                    <input type="text" class="form-control" id="loaicr">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="coquanxuatbancr" class="form-label">Cơ quan xuất bản:</label>
+                    <input type="text" class="form-control" id="coquanxuatbancr">
+                  </div>
+                  <div class="form-group col-6">
+                    <label for="diemcr" class="form-label">Điểm:</label>
+                    <input type="text" class="form-control" id="diemcr">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-default" data-bs-dismiss="modal" onclick="location.href='@("/DanhMucHDGSNN" + ViewBag.Year + "/Index")'">Close</button>
+        <button type="button" class="btn btn-primary" onclick="themMoi()">Add</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+
+<script>
+  const year = @ViewBag.Year; // Lấy giá trị year từ ViewBag
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const table = $('#example5').DataTable({
+      "paging": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "responsive": false,
+      "lengthChange": true,
+      "scrollX": true,
+      "width": "100%",
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+      "ajax": {
+        "url": `https://localhost:44364/api/DanhMucHDGSNN/${year}/Get-all`,
+        "headers": {
+          "Authorization": "Bearer " + _token,
+          "Content-Type": "application/json"
+        },
+        "dataSrc": ""
+      },
+      "columns": [
+        { "data": "id", "width": "3%" },
+        { "data": "stt", "width": "6%" },
+        { "data": "hoidongnganh", "width": "4%" },
+        { "data": "tentapchi", "width": "4%" },
+        { "data": "chisoissn" },
+        { "data": "loai" },
+        { "data": "coquanxuatban" },
+        { "data": "diem" },
+        {
+          "data": null, "width": "3%", "orderable": false,
+          "render": function (data, type, row, meta) {
+            return "<a type='button' data-toggle='modal' data-target='#modal-lg' onclick='xemchitiet(" + row.id + ")'><i class='bi bi-pencil-square' style='color: #3276b1;'></i></a>";
+          }
+        },
+        {
+          "data": null, "width": "3%", "orderable": false,
+          "render": function (data, type, row, meta) {
+            return "<a type='button' onclick='deleteItem(" + row.id + ")'><i class='bi bi-trash' style='color: #c82333;'></i></a>";
+          }
+        }
+      ]
+
+    }).buttons().container().appendTo('#example5_wrapper .col-md-6:eq(0)');
+  });
+
+  function themMoi() {
+    const data = {
+      stt: document.getElementById("sttcr").value,
+      hoidongnganh: document.getElementById("hoidongnganhcr").value,
+      tentapchi: document.getElementById("tentapchicr").value,
+      chisoissn: document.getElementById("eissncr").value,
+      loai: document.getElementById("loaicr").value,
+      coquanxuatban: document.getElementById("coquanxuatbancr").value,
+      diem: document.getElementById("diemcr").value,
+    }
+    fetch(`https://localhost:44364/api/DanhMucHDGSNN/${year}/Create`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => {
+        if (response.ok) {
+          alert('Thêm dữ liệu thành công!');
+          // Đóng modal
+          $('#modal-lg-create').modal('hide');
+
+          // Load lại trang
+          location.reload();
+        } else {
+          alert('Có lỗi');
+        }
+      });
+  }
+
+  //Xóa
+  function deleteItem(id) {
+    if (confirm("Xác nhận xóa?")) {
+      fetch(`https://localhost:44364/api/DanhMucHDGSNN/${year}/Delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            alert('Xóa dữ liệu thành công!');
+            window.location.href = '/DanhMuc';
+          } else {
+            alert('Có lỗi xảy ra');
+          }
+        });
+    }
+  }
+  function importExcel() {
+    const input = document.querySelector('#importFileInput');
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch(`https://localhost:44364/api/DanhMucHDGSNN/${year}/ImportExcel`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _token,
+      },
+      body: formData
+    })
+      .then(response => {
+        if (!response.ok) {
+          return alert("Có lỗi xảy ra");
+        }
+        return alert("Nhập dữ liệu thành công");
+      })
+  }
+</script>

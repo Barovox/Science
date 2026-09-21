@@ -1,0 +1,192 @@
+﻿@using QLKHCN_FE.ViewModel
+@model UserLogin
+@{
+    var user = HttpContext.Current.Session["CurrentUser"] as UserLogin;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THỐNG KÊ KHỐI LƯỢNG NCKH</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/Content/clients/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/Content/clients/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="~/Content/user.css">
+    <link href="~/Content/NewAssets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="~/Content/NewAssets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/Content/clients/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/clients/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/Content/clients/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="~/Content/clients/plugins/bs-stepper/css/bs-stepper.min.css">
+    
+    <link rel="stylesheet" href="~/Content/clients/plugins/sweetalert2/sweetalert2.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    
+    <style>
+        body {
+            font-family: "Lato", sans-serif;
+            background-color: whitesmoke;
+            margin: 0;
+        }
+
+        .header {
+            background-color: white;
+            padding: 5px;
+        }
+
+        .cs-row {
+            display: flex;
+            align-items: stretch;
+            column-gap: 20px;
+            margin: 0 20px;
+        }
+
+        .logo {
+            width: 15%;
+        }
+
+        .logo img {
+            width: 256px;
+        }
+
+        .menu {
+            width: 45%;
+            display: flex;
+            align-items: stretch;
+            flex-direction: row;
+            column-gap: 10px;
+        }
+
+        .cs-btn {
+            background-color: #008CBA;
+            border-radius: 2px;
+            color: white;
+            text-decoration: none;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .cs-user {
+            width: 40%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .content-page {
+            background-color: white;
+            margin-top: 0%;
+            padding: 4% 6% 4% 6%;
+        }
+
+        .all {
+            background-color: whitesmoke;
+        }
+
+        .card-tabs {
+            margin-top: 2%;
+            padding: 4% 6% 1% 6%;
+        }
+
+        .dropdown-menu.show {
+            left: -95px !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="cs-row">
+            <a class="logo" style=" width: 245px; " href="@Url.Action("DeTai","NguoiDung")">
+                <img src="~/Content/Images/logo-1.png" alt="Logo UEF">
+              
+            </a>
+            <div class="menu">
+                <div class="hide-on-mobile" style=" margin-left: 15%;  ">
+                    @*<img src="~/Content/Images/Asset 4@2x.png" alt="banner UEF" >*@
+                    <img src="~/Content/Images/BANNER UEF 2.png" style="width: 220%;margin-top: -4px;"/>
+                    @*<img src="~/Content/Images/CONGTTQL1.png" alt="banner UEF" />*@
+                </div>
+
+                <!--
+                   <a href="" class="btn btn-primary" style=" align-items: center; border-radius: 2px; color: white; text-decoration: none;display: flex; align-items: center; ">Giảng viên</a>
+                    <a href="" class="btn btn-primary" style=" align-items: center; border-radius: 2px; color: white; text-decoration: none;display: flex; align-items: center; ">Nghiên cứu viên</a>
+                    <a href="@Url.Action("Index","DanhMucXetDuyet")" class="btn btn-primary" style=" align-items: center; border-radius: 2px; color: white; text-decoration: none;display: flex; align-items: center; ">Quản lý</a>
+                -->
+            </div>
+            <div class="cs-user">
+                <p style="margin-top: 15px; color: white;">Xin chào</p> <p id="xinchao" style="margin-top: 15px;padding: 9px;"></p>
+                <br/>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-warning dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
+                        <span></span>
+                    </button>
+
+                    <div class="dropdown-menu" role="menu">
+                        <a class="dropdown-item" href="@Url.Action("Index","DanhMucXetDuyet")">Quản lý</a>
+                        <a class="dropdown-item" href="@Url.Action("LyLich2","NguoiDung")">Lý lịch cá nhân</a>
+                        <a class="dropdown-item btn btn-outline-danger" href="@Url.Action("Login","NguoiDung")" type="button" style=" margin: 0px; ">Thoát</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--</div>-->
+    <script>
+        const _idUser = "@user.IDUser";
+        const _hoTen = "@user.HoTen";
+        const _quyen = "@user.Role";
+        const _ngach = "@user.Ngach";
+        const _token = "@user.Token";
+        sessionStorage.setItem("Quyen", _quyen);
+        document.querySelector('#xinchao').innerHTML = `${_hoTen}`;
+        
+        
+    </script>
+
+    <div class="content-page">
+        @RenderBody()
+    </div>
+    <!-- jQuery -->
+    <script src="~/Content/clients/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="~/Content/clients/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- bs-custom-file-input -->
+    <script src="~/Content/clients/plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+
+    <!-- DataTables  & Plugins -->
+    <script src="~/Content/clients/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Content/clients/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Content/clients/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Content/clients/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/Content/clients/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Content/clients/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Content/clients/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Content/clients/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Content/clients/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Content/clients/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Content/clients/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Content/clients/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <!-- date-range-picker -->
+    <script src="~/Content/clients/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- BS-Stepper -->
+    <script src="~/Content/clients/plugins/bs-stepper/js/bs-stepper.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="~/Content/clients/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+    <script src="~/Content/clients/plugins/toastr/toastr.min.js"></script>
+</body>
+</html>
